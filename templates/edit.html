@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-5 w-50">
+        <h1 class="mb-4">{% block title %} Edit a Book {{ book[0] }} {% endblock %}</h1>
+        <form method="post">
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" name="title" id="title" class="form-control" placeholder="Book title" value="{{book[1]}}">
+            </div>
+
+            <div class="mb-3">
+                <label for="author" class="form-label">Author</label>
+                <input type="text" name="author" id="author" class="form-control" placeholder="Book author" value="{{book[2]}}">
+            </div>
+
+            <div class="mb-3">
+                <label for="pages_num" class="form-label">Number of pages</label>
+                <input type="number" name="pages_num" id="pages_num" class="form-control" placeholder="Number of pages" value="{{book[3]}}">
+            </div>
+
+            <div class="mb-3">
+                <label for="review" class="form-label">Review</label>
+                <textarea name="review" id="review" class="form-control" placeholder="Review" rows="6">{{book[4]}}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Submit</button>
+        </form>
+    </div>
+{% endblock %}
