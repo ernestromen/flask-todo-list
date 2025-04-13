@@ -9,6 +9,8 @@ services:
     environment:
       - FLASK_ENV=development
       - FLASK_APP=app.py
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
     ports:
       - "5000:5000"
 
