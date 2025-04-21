@@ -60,3 +60,27 @@ body {
     color: white;
     font-size: 30px;
   }
+
+
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+
+  .addUserButton{
+    border-radius: 35px;
+    padding:12px;
+    background-color:blue;
+    cursor: pointer;
+  }
