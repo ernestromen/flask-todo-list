@@ -9,14 +9,11 @@ function AddUser() {
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    // console.log("hello?");
   }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(userName);
-    console.log(password);
-    console.log(email);
+
 
     let formData = {
       username: userName,
@@ -27,7 +24,6 @@ function AddUser() {
     axios
       .post("http://localhost:5000/add-user",formData)
       .then((response) => {
-        console.log(response);
         // setUsers(response.data);
         // setIsLoaded(true);
       })

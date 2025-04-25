@@ -1,32 +1,33 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-function AddUser() {
+
+function Login() {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
 
-  useEffect(() => {
-    // console.log("hello?");
-  }, []);
+  const navigate = useNavigate();
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(password);
-    console.log(email);
+
 
     let formData = {
       email: email,
       password: password,
-    }
+    };
 
     axios
-      .post("http://localhost:5000/login",formData)
+      .post("http://localhost:5000/login", formData, { withCredentials: true })
       .then((response) => {
-        console.log(response);
-        // setUsers(response.data);
-        // setIsLoaded(true);
+        setIsLoggedIn(true)
+        navigate("/");
       })
       .catch((error) => {
         setError(error);
@@ -34,17 +35,19 @@ function AddUser() {
       });
   };
 
-  if (error) return <div className="m-auto bg-danger text-light  w-50 p-3 text-center">Error: {error.message}</div>;
-
   return (
     <div className="content">
       <h2 className="text-center mt-3">Login User</h2>
+      {error && (
+        <div className="m-auto bg-danger text-light w-25 p-3 text-center my-3">
+          Error: {error.message}
+        </div>
+      )}
       <form
         className="p-4 border rounded shadow-sm"
         style={{ maxWidth: "400px", margin: "0 auto" }}
         onSubmit={handleSubmit}
       >
-
         <div className="mb-3">
           <label htmlFor="email" className="form-label">
             Email
@@ -81,4 +84,4 @@ function AddUser() {
   );
 }
 
-export default AddUser;
+export default Login;

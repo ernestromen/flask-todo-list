@@ -79,8 +79,7 @@ body {
   }
 
   .addUserButton{
-    border-radius: 35px;
-    padding:12px;
-    background-color:blue;
-    cursor: pointer;
+    border:1px solid black;
+      border-radius: 35px;
+      padding: 10px;
   }

@@ -8,5 +8,3 @@ RUN pip install --upgrade pip && \
     pip install flask-cors && \
     pip install -U Flask-SQLAlchemy
 COPY . .
-# pip install flask-cors
-# pip install -U Flask-SQLAlchemy

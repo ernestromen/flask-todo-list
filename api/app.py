@@ -1,6 +1,6 @@
 import os
 import psycopg2
-from flask import Flask, jsonify, make_response,render_template,jsonify,request
+from flask import Flask, jsonify, make_response,render_template,jsonify,request,session
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
@@ -9,8 +9,10 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'your_super_secret_key'
-CORS(app)
-# CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
+
+# CORS(app)
+
 class Base(DeclarativeBase):
     pass
 
@@ -26,7 +28,7 @@ class User(db.Model):
     username = db.Column(db.String(50))
     email = db.Column(db.String(120))
     password = db.Column(db.String(120))
-    created = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 @app.route('/users')
 def index():
@@ -37,7 +39,7 @@ def index():
             "id": user.id,
             "username": user.username,
             "email": user.email,
-            "created": user.created
+            "created_at": user.created_at
         } for user in users
     ]
     return jsonify(users_list)
@@ -91,19 +93,22 @@ def login_user():
             "id": user.id,
             "username": user.username,
             "email": user.email,
-            "created": user.created
+            "created_at": user.created_at
         })
     else:
         return jsonify({"error": "User not found"}), 404
-@app.route('/logout')
+@app.route('/logout', methods=['POST'])
 def logout():
     session.pop('user_id', None)
     return jsonify({"message": "Logged out"})
+
+
 @app.route('/check-login')
 def checkLogin():
+    user_id = session.get('user_id')
     if user_id:
-        user = User.query.get(user_id)
-        return jsonify({"loggedIn": True, "username": user.username})
+        # user = User.query.get(user_id)
+        return jsonify({"loggedIn": True, "username": 'user.username'})
     else:
         return jsonify({"loggedIn": False})
 

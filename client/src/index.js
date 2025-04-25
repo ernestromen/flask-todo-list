@@ -4,12 +4,13 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { AuthProvider } from "./context/AuthContext";
 
 ReactDOM.render(
   <BrowserRouter>
-    <App/>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </BrowserRouter>,
   document.getElementById("root")
 );

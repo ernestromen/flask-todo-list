@@ -12,7 +12,6 @@ function UsersPage({ plusIcon }) {
     axios
       .get("http://localhost:5000/users")
       .then((response) => {
-        console.log(response.data[0])
         setUsers(response.data);
         setIsLoaded(true);
       })
@@ -27,10 +26,10 @@ function UsersPage({ plusIcon }) {
 
   return (
     <div className="content">
-      <h2 class="text-center mt-3">Users</h2>
+      <h2 className="text-center mt-3">Users</h2>
 
-      <div class="text-center my-3">
-      <Link to="/add-user"><FontAwesomeIcon icon={plusIcon} className="addUserButton" /></Link>
+      <div className="text-center my-3">
+      <Link to="/add-user"><FontAwesomeIcon icon={plusIcon} className="addUserButton fa-3x" /></Link>
 
         
       </div>
@@ -49,12 +48,12 @@ function UsersPage({ plusIcon }) {
             <tr key={user.id}>
               <td>{user.username}</td>
               <td>{user.email}</td>
-              <td>{user.created}</td>
+              <td>{user.created_at}</td>
               <td>
-                <button class="btn btn-success">Edit</button>
+                <button className="btn btn-success">Edit</button>
               </td>
               <td>
-                <button class="btn btn-danger">Delete</button>
+                <button className="btn btn-danger">Delete</button>
               </td>
             </tr>
           ))}
