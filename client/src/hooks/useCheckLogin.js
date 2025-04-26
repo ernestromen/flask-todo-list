@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 
-const useCheckLogin = (isLoggedIn,setIsLoggedIn) => {
-
+const useCheckLogin = (isLoggedIn, setIsLoggedIn, user, setUser) => {
   useEffect(() => {
     fetch("http://localhost:5000/check-login", {
       credentials: "include",
@@ -9,8 +8,7 @@ const useCheckLogin = (isLoggedIn,setIsLoggedIn) => {
       .then((res) => res.json())
       .then((data) => {
         setIsLoggedIn(data.loggedIn);
-        console.log('naviagte please');
-        console.log(data.loggedIn);
+        setUser(data.user.username);
       });
   }, []);
 };

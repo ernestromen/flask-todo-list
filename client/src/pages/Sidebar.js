@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import useCheckLogin from "../hooks/useCheckLogin";
+import { useSelector } from "react-redux";
 
 function Sidebar() {
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
-  useCheckLogin(isLoggedIn, setIsLoggedIn);
+  const { isLoggedIn, user } = useSelector((state) => state.auth);
 
   return (
     <div className="sidebar">

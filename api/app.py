@@ -107,10 +107,16 @@ def logout():
 def checkLogin():
     user_id = session.get('user_id')
     if user_id:
-        # user = User.query.get(user_id)
-        return jsonify({"loggedIn": True, "username": 'user.username'})
-    else:
-        return jsonify({"loggedIn": False})
+        user = User.query.get(user_id)
+        if user:
+            return jsonify({"loggedIn": True, "user": {
+                    "id": user.id,
+                    "email": user.email,
+                    "username": user.username
+                }})
+
+    return jsonify({"loggedIn": False,"user":{}})
+
 
 if __name__ == '__main__':
     app.run(debug=True)

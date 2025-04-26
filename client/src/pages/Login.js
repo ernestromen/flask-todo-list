@@ -1,38 +1,22 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-
+import React, { useState } from "react";
+import useLogIn from "../hooks/useLogIn";
 
 function Login() {
   const [error, setError] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
 
-  const navigate = useNavigate();
-
+  const logIn = useLogIn();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
 
     let formData = {
       email: email,
       password: password,
     };
 
-    axios
-      .post("http://localhost:5000/login", formData, { withCredentials: true })
-      .then((response) => {
-        setIsLoggedIn(true)
-        navigate("/");
-      })
-      .catch((error) => {
-        setError(error);
-        setIsLoaded(true);
-      });
+    logIn(formData);
   };
 
   return (

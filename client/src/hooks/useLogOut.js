@@ -1,9 +1,9 @@
-import { useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setLoggedIn, logOutAction } from "../features/auth/authSlice";
 
 const useLogOut = () => {
-  const { setIsLoggedIn } = useAuth();
+  const dispatch = useDispatch();
 
   const logOut = () => {
     axios
@@ -15,11 +15,11 @@ const useLogOut = () => {
         }
       )
       .then((response) => {
-        setIsLoggedIn(false);
+        dispatch(logOutAction(false));
       })
       .catch((error) => {});
   };
-  return logOut
+  return logOut;
 };
 
 export default useLogOut;
