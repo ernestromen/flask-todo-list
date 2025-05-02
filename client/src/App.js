@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import AppRoutes from "./routes/ AppRoutes";
 import Header from "./pages/Header";
 import Sidebar from "./pages/Sidebar";

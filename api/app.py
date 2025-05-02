@@ -44,6 +44,11 @@ def index():
     ]
     return jsonify(users_list)
 
+# @app.route('/user/<int:id>')
+# def getUserById():
+
+
+
 
 @app.route('/api/v1.0/test', methods=['GET'])
 def test_response():

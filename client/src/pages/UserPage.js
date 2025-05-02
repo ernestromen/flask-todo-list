@@ -22,16 +22,28 @@ function UsersPage({ plusIcon }) {
   }, []);
 
   if (error) return <div>Error: {error.message}</div>;
-  if (!isLoaded) return <div>Loading...</div>;
+  if (!isLoaded)
+    return (
+      <div
+        class="text-center"
+        style={{ fontSize: "30px", textAlign: "center" }}
+      >
+        Loading...
+      </div>
+    );
 
   return (
     <div className="content">
+
       <h2 className="text-center mt-3">Users</h2>
 
       <div className="text-center my-3">
       <Link to="/add-user"><FontAwesomeIcon icon={plusIcon} className="addUserButton fa-3x" /></Link>
 
         
+        <Link to="/add-user">
+          <FontAwesomeIcon icon={plusIcon} className="addUserButton fa-3x" />
+        </Link>
       </div>
       <table className="w-50 m-auto  table-bordered">
         <thead>
