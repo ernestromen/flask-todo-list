@@ -15,7 +15,15 @@ export default {
       }
     );
   },
+  addUser(formData) {
+    return axios.post("http://localhost:5000/add-user", formData);
+  },
   getAllUsers() {
     return axios.get("http://localhost:5000/users");
+  },
+  checkLogin() {
+    return axios.get("http://localhost:5000/check-login", {
+      withCredentials: true,
+    });
   },
 };

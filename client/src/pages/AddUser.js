@@ -1,39 +1,37 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { addUser } from "../features/auth/authSlice";
 
 function AddUser() {
-  const [error, setError] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const { error, success, loading } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-  }, []);
+  const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-
     let formData = {
       username: userName,
       email: email,
       password: password,
-    }
+    };
 
-    axios
-      .post("http://localhost:5000/add-user",formData)
-      .then((response) => {
-        // setUsers(response.data);
-        // setIsLoaded(true);
-      })
-      .catch((error) => {
-        setError(error);
-        setIsLoaded(true);
-      });
+    dispatch(addUser(formData));
   };
 
-  if (error) return <div>Error: {error.message}</div>;
+  if (error) return <div className="text-center">Error: {error}</div>;
+  if (success) return <div className="text-center">{success}</div>;
+  if (loading)
+    return (
+      <div
+        className="text-center"
+        style={{ fontSize: "30px", textAlign: "center" }}
+      >
+        Loading...
+      </div>
+    );
 
   return (
     <div className="content">

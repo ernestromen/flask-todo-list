@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import UserAPI from "../../api/user";
-import axios from "axios";
 
 export const logInUser = createAsyncThunk(
   "auth/logInUser",
@@ -38,11 +37,42 @@ export const logOutUser = createAsyncThunk(
   }
 );
 
+export const addUser = createAsyncThunk(
+  "auth/addUser",
+  async (formData, { rejectWithValue }) => {
+    try {
+      let response = await UserAPI.addUser(formData);
+
+      return response.data;
+    } catch (err) {
+      // return rejectWithValue(err.response?.data || err.message);
+      return rejectWithValue(
+        (err.response && err.response.data) || err.message
+      );
+    }
+  }
+);
+
+export const checkLogin = createAsyncThunk(
+  "auth/checkLogin",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await UserAPI.checkLogin();
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(
+        (err.response && err.response.data) || err.message
+      );
+    }
+  }
+);
+
 const initialState = {
   isLoggedIn: false,
   user: null,
-  loading: false,
-  error: false,
+  loading: null,
+  error: null,
+  success: null,
 };
 
 const authSlice = createSlice({
@@ -53,39 +83,62 @@ const authSlice = createSlice({
       state.isLoggedIn = action.payload;
       state.user = action.payload.user;
     },
+    setSuccess: (state, action) => {
+      state.success = action.payload.message;
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(logInUser.pending, (state) => {
         state.loading = true;
-        console.log("pending");
       })
       .addCase(logInUser.fulfilled, (state, action) => {
         state.users = action.payload;
         state.loading = false;
-        console.log("fulfilled");
       })
       .addCase(logInUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        console.log("rejected");
       })
       .addCase(logOutUser.pending, (state) => {
         state.loading = true;
-        console.log("pending");
       })
       .addCase(logOutUser.fulfilled, (state, action) => {
         state.users = action.payload;
         state.loading = false;
-        console.log("fulfilled");
+        state.success = true;
       })
       .addCase(logOutUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        console.log("rejected");
+      })
+      .addCase(addUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(addUser.fulfilled, (state, action) => {
+        state.success = action.payload.message;
+        state.loading = false;
+      })
+      .addCase(addUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(checkLogin.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(checkLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isLoggedIn = action.payload.loggedIn;
+        state.user = action.payload.user.username;
+      })
+      .addCase(checkLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.isLoggedIn = false;
+        state.user = null;
+        state.error = action.payload;
       });
   },
 });
 
-export const { setLoggedIn, setError } = authSlice.actions;
+export const { setLoggedIn } = authSlice.actions;
 export default authSlice.reducer;

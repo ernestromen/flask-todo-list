@@ -32,10 +32,6 @@ function UsersPage({ plusIcon }) {
         <Link to="/add-user">
           <FontAwesomeIcon icon={plusIcon} className="addUserButton fa-3x" />
         </Link>
-
-        <Link to="/add-user">
-          <FontAwesomeIcon icon={plusIcon} className="addUserButton fa-3x" />
-        </Link>
       </div>
       <table className="w-50 m-auto  table-bordered">
         <thead>
