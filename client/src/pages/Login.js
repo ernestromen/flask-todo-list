@@ -1,20 +1,15 @@
 import React, { useState } from "react";
-import useLogIn from "../hooks/useLogIn";
 import { useDispatch, useSelector } from "react-redux";
 import { logInUser } from "../features/auth/authSlice";
-import { useNavigate } from "react-router-dom";
 
 function Login() {
-  // const [error, setError] = useState(null);
+  
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const { error, loading } = useSelector((state) => state.auth);
-
-  const logIn = useLogIn();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,17 +19,27 @@ function Login() {
       password: password,
     };
 
-   dispatch(logInUser(formData));
+    dispatch(logInUser(formData));
   };
 
+  if (error) return <div className="text-center">Error: {error.error}</div>;
+  if (loading)
+    return (
+      <div
+        className="text-center"
+        style={{ fontSize: "30px", textAlign: "center" }}
+      >
+        Loading...
+      </div>
+    );
   return (
     <div className="content">
       <h2 className="text-center mt-3">Login User</h2>
-      {/* {error && (
+      {error && (
         <div className="m-auto bg-danger text-light w-25 p-3 text-center my-3">
-          Error: {error.message}
+          Error: {error}
         </div>
-      )} */}
+      )}
       <form
         className="p-4 border rounded shadow-sm"
         style={{ maxWidth: "400px", margin: "0 auto" }}

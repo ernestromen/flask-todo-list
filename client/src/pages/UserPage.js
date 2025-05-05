@@ -1,31 +1,23 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
+import { fetchAllUsers } from "../features/users/userSlice";
 
 function UsersPage({ plusIcon }) {
-  const [users, setUsers] = useState([]);
-  const [error, setError] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const { users, loading, error } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/users")
-      .then((response) => {
-        setUsers(response.data);
-        setIsLoaded(true);
-      })
-      .catch((error) => {
-        setError(error);
-        setIsLoaded(true);
-      });
+    dispatch(fetchAllUsers());
   }, []);
 
-  if (error) return <div>Error: {error.message}</div>;
-  if (!isLoaded)
+  if (error) return <div className="text-center">Error: {error}</div>;
+
+  if (loading)
     return (
       <div
-        class="text-center"
+        className="text-center"
         style={{ fontSize: "30px", textAlign: "center" }}
       >
         Loading...
@@ -34,13 +26,13 @@ function UsersPage({ plusIcon }) {
 
   return (
     <div className="content">
-
       <h2 className="text-center mt-3">Users</h2>
 
       <div className="text-center my-3">
-      <Link to="/add-user"><FontAwesomeIcon icon={plusIcon} className="addUserButton fa-3x" /></Link>
+        <Link to="/add-user">
+          <FontAwesomeIcon icon={plusIcon} className="addUserButton fa-3x" />
+        </Link>
 
-        
         <Link to="/add-user">
           <FontAwesomeIcon icon={plusIcon} className="addUserButton fa-3x" />
         </Link>

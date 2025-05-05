@@ -1,15 +1,14 @@
 import React from "react";
-import useLogOut from "../hooks/useLogOut";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { logOutUser } from "../features/auth/authSlice";
 
 function Header() {
   const { isLoggedIn, user } = useSelector((state) => state.auth);
-
-  const logOut = useLogOut();
+  const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    logOut();
+    dispatch(logOutUser());
   };
 
   return (
@@ -25,7 +24,7 @@ function Header() {
         </div>
       ) : (
         <button className="btn btn-danger">Logged off</button>
-      )}{" "}
+      )}
     </div>
   );
 }
