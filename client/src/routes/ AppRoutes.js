@@ -6,15 +6,16 @@ import AddUser from "../pages/AddUser";
 import Login from "../pages/Login";
 import { Navigate } from "react-router-dom";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { useAuth } from "../context/AuthContext";
+import { useDispatch, useSelector } from "react-redux";
 
 function AppRoutes() {
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  // const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useSelector((state) => state.auth);
 
   return (
     <Routes>
       <Route path="/" element={<UsersPage plusIcon={faPlus} />} />
-      <Route path="/login" element={isLoggedIn ? (<Navigate to="/" replace />): (<Login isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>)} />
+      <Route path="/login" element={isLoggedIn ? (<Navigate to="/" replace />): (<Login/>)} />
       <Route path="/add-user" element={<AddUser />} />
       <Route path="/about" element={<About />} />
     </Routes>

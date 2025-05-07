@@ -25,10 +25,10 @@ function UsersPage({ plusIcon }) {
     );
 
   return (
-    <div className="content">
-      <h2 className="text-center mt-3">Users</h2>
+    <div className="content mt-5">
+      <h2 className="text-center mt-5">Users</h2>
 
-      <div className="text-center my-3">
+      <div className="text-center my-3 mt-5">
         <Link to="/add-user">
           <FontAwesomeIcon icon={plusIcon} className="addUserButton fa-3x" />
         </Link>

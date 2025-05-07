@@ -34,8 +34,8 @@ function AddUser() {
     );
 
   return (
-    <div className="content">
-      <h2 className="text-center mt-3">Add User</h2>
+    <div className="content mt-5">
+      <h2 className="text-center mt-5">Add User</h2>
       <form
         className="p-4 border rounded shadow-sm"
         style={{ maxWidth: "400px", margin: "0 auto" }}

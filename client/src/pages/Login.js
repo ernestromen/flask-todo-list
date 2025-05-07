@@ -33,8 +33,8 @@ function Login() {
       </div>
     );
   return (
-    <div className="content">
-      <h2 className="text-center mt-3">Login User</h2>
+    <div className="content mt-5">
+      <h2 className="text-center mt-5">Login User</h2>
       {error && (
         <div className="m-auto bg-danger text-light w-25 p-3 text-center my-3">
           Error: {error}
