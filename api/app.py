@@ -102,6 +102,25 @@ def login_user():
         })
     else:
         return jsonify({"error": "User not found"}), 404
+
+@app.route('/delete-user', methods=['POST'])
+def delete_user():
+    data = request.get_json()
+    user_id = data.get("id")
+
+    if not user_id:
+        return jsonify({"error": "No user ID provided"}), 400
+
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({"message": f"User {user_id} deleted successfully","id": user_id})
+
 @app.route('/logout', methods=['POST'])
 def logout():
     session.pop('user_id', None)
