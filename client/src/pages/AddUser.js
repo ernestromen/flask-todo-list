@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser } from "../features/auth/authSlice";
+import { addUser, setSuccess } from "../features/users/userSlice";
 
 function AddUser() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const { error, success, loading } = useSelector((state) => state.auth);
+  const { error, success, loading } = useSelector((state) => state.user);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        dispatch(setSuccess(null));
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [success, dispatch]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -21,8 +30,6 @@ function AddUser() {
     dispatch(addUser(formData));
   };
 
-  if (error) return <div className="text-center">Error: {error}</div>;
-  if (success) return <div className="text-center">{success}</div>;
   if (loading)
     return (
       <div
@@ -35,6 +42,14 @@ function AddUser() {
 
   return (
     <div className="content mt-5">
+      {success && (
+        <div
+          className="m-auto bg-success text-light w-25 p-3 text-center"
+          style={{ position: "relative", top: "51%" }}
+        >
+          {success}
+        </div>
+      )}
       <h2 className="text-center mt-5">Add User</h2>
       <form
         className="p-4 border rounded shadow-sm"

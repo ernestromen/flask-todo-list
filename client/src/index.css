@@ -110,3 +110,8 @@ body {
   .space{
     margin-top: 120px;
   }
+
+  .errorDisplayBox{
+    position:relative;
+    top:34%;
+  }

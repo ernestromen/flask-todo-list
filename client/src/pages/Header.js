@@ -19,19 +19,19 @@ function Header() {
   };
 
   return (
-    <div class="outercontainer border-bottom border-dark">
-      <header class="header" style={{ borderBottom: "10px solid grey" }}>
-        <div class="container-fluid">
-          <div class="row">
-            <div class="col-md-2 col-sm-3 col-12 order-md-1 order-sm-3 order-1 logo_section text-center mb-2"></div>
+    <div className="outercontainer border-bottom border-dark">
+      <header className="header" style={{ borderBottom: "10px solid grey" }}>
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-md-2 col-sm-3 col-12 order-md-1 order-sm-3 order-1 logo_section text-center mb-2"></div>
 
-            <div class="col-xl-8 col-md-7 col-sm-4 col-6 order-md-2 order-sm-1 order-2 ">
+            <div className="col-xl-8 col-md-7 col-sm-4 col-6 order-md-2 order-sm-1 order-2 ">
               <h1 className="text-center">Admin Dashboard</h1>
             </div>
 
-            <div class="col-xl-2 col-md-3 col-sm-5 col-6 pt-3 order-md-3 order-sm-2 order-3">
-              <div class="row">
-                <div class="col-6">
+            <div className="col-xl-2 col-md-3 col-sm-5 col-6 pt-3 order-md-3 order-sm-2 order-3">
+              <div className="row">
+                <div className="col-6">
                   {user ? (
                     <FontAwesomeIcon
                       className="cursor-pointer"
@@ -46,11 +46,10 @@ function Header() {
                     />
                   )}
                 </div>
-                <div class="col-6">
+                <div className="col-6">
                   {isLoggedIn ? (
                     <div className="row">
-                      <div className="col-6">
-                      </div>
+                      <div className="col-6"></div>
                       <div className="col-6">
                         <form onSubmit={handleSubmit}>
                           <button className="btn btn-danger">
@@ -65,12 +64,11 @@ function Header() {
                   ) : (
                     <div className="row">
                       <div className="col-6">
-                          <Link to="/login" className="btn btn-success">
-                            <FontAwesomeIcon icon={faSignInAlt} title="Login" />
-                          </Link>
+                        <Link to="/login" className="btn btn-success">
+                          <FontAwesomeIcon icon={faSignInAlt} title="Login" />
+                        </Link>
                       </div>
-                      <div className="col-6">
-                      </div>
+                      <div className="col-6"></div>
                     </div>
                   )}
                 </div>
