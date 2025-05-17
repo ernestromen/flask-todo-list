@@ -33,13 +33,46 @@ export const addUser = createAsyncThunk(
   }
 );
 
+export const getUser = createAsyncThunk(
+  "auth/getUser",
+
+  async (id, { dispatch, rejectWithValue }) => {
+    try {
+      let response = await UserAPI.getUser(id);
+      dispatch(setUser(response.data));
+
+      return response.data;
+    } catch (err) {
+      // return rejectWithValue(err.response?.data || err.message);
+      return rejectWithValue(
+        (err.response && err.response.data) || err.message
+      );
+    }
+  }
+);
+
+export const updateUser = createAsyncThunk(
+  "auth/updateUser",
+  async (formdata, { dispatch, rejectWithValue }) => {
+    try {
+      let response = await UserAPI.updateUser(formdata);
+      dispatch(setUser(response.data));
+
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(
+        (err.response && err.response.data) || err.message
+      );
+    }
+  }
+);
+
 export const deleteUser = createAsyncThunk(
   "auth/deleteUser",
   async (id, { rejectWithValue }) => {
     try {
       let response = await UserAPI.deleteUser(id);
-      // dispatch(setLoggedIn(false));
-      // return id;
+
       return response.data;
     } catch (err) {
       // return rejectWithValue(err.response?.data || err.message);
@@ -52,6 +85,7 @@ export const deleteUser = createAsyncThunk(
 
 const initialState = {
   users: [],
+  user: [],
   loading: false,
   error: null,
   success: null,
@@ -63,6 +97,9 @@ const userSlice = createSlice({
   reducers: {
     setUsers: (state, action) => {
       state.users = action.payload;
+    },
+    setUser: (state, action) => {
+      state.user = action.payload;
     },
     setError: (state, action) => {
       state.error = action.payload;
@@ -93,7 +130,30 @@ const userSlice = createSlice({
       })
       .addCase(addUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = action.payload.message;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getUser.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.loading = false;
+        state.success = action.payload.message;
+      })
+      .addCase(getUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
       .addCase(deleteUser.pending, (state) => {
         state.loading = true;
@@ -113,5 +173,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { users, setUsers, setSuccess } = userSlice.actions;
+export const { users, setUsers, setUser, setSuccess, setError } =
+  userSlice.actions;
 export default userSlice.reducer;

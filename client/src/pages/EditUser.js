@@ -1,31 +1,44 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser, setSuccess, setError } from "../features/users/userSlice";
+import {
+  getUser,
+  updateUser,
+  setSuccess,
+  setError,
+} from "../features/users/userSlice";
+import { useParams } from "react-router-dom";
 import ErrorMessage from "../pages/ErrorMessage";
 import SuccessMessage from "../pages/SuccessMessage";
 
-function AddUser() {
+function EditUser() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const { error, success, loading } = useSelector((state) => state.user);
 
-  const { error: authError } = useSelector((state) => state.auth);
-
+  const { id } = useParams();
   const dispatch = useDispatch();
+
+  const { user, error, success, loading } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    dispatch(getUser(id));
+  }, []);
+
+  useEffect(() => {
+    setUserName(user.username);
+    setEmail(user.email);
+    setPassword(user.password);
+  }, [user]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     let formData = {
+      id,
       username: userName,
       email: email,
       password: password,
     };
-
-    dispatch(addUser(formData));
-    setUserName("");
-    setEmail("");
-    setPassword("");
+    dispatch(updateUser(formData));
   };
 
   if (loading)
@@ -37,10 +50,10 @@ function AddUser() {
         Loading...
       </div>
     );
-
   return (
     <div className="content mt-5">
-      <h2 className="text-center mt-5">Add User</h2>
+      <h2 className="text-center mt-5">Edit User</h2>
+
       <SuccessMessage
         message={success}
         clearSuccess={() => dispatch(setSuccess(null))}
@@ -49,12 +62,8 @@ function AddUser() {
         message={error}
         clearError={() => dispatch(setError(null))}
       />
-      <ErrorMessage
-        message={authError}
-        clearError={() => dispatch(setError(null))}
-      />
       <form
-        className="p-4 border rounded shadow-sm"
+        className="p-4 border rounded shadow-sm mt-3"
         style={{ maxWidth: "400px", margin: "0 auto" }}
         onSubmit={handleSubmit}
       >
@@ -92,7 +101,6 @@ function AddUser() {
           </label>
           <input
             value={password}
-            type="password"
             className="form-control"
             id="password"
             placeholder="Enter your password"
@@ -101,11 +109,11 @@ function AddUser() {
         </div>
 
         <button type="submit" className="btn btn-primary w-100">
-          Register
+          Update
         </button>
       </form>
     </div>
   );
 }
 
-export default AddUser;
+export default EditUser;

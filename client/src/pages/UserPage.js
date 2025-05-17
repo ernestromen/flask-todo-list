@@ -1,21 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-import { fetchAllUsers, deleteUser,setSuccess } from "../features/users/userSlice";
+import {
+  fetchAllUsers,
+  deleteUser,
+  setSuccess,
+  setError,
+} from "../features/users/userSlice";
+import ErrorMessage from "../pages/ErrorMessage";
+import SuccessMessage from "../pages/SuccessMessage";
 
 function UsersPage({ plusIcon }) {
-  const { users, loading, error,success } = useSelector((state) => state.user);
+  const {
+    error: userError,
+    success: userSuccess,
+    users,
+    loading,
+  } = useSelector((state) => state.user);
+  const { error: authError } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (success) {
-      const timer = setTimeout(() => {
-        dispatch(setSuccess(null));
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [success,dispatch]);
 
   const handleDeletion = (id) => {
     dispatch(deleteUser(id));
@@ -23,8 +27,6 @@ function UsersPage({ plusIcon }) {
   useEffect(() => {
     dispatch(fetchAllUsers());
   }, []);
-
-  if (error) return <div className="text-center">Error: {error}</div>;
 
   if (loading)
     return (
@@ -39,14 +41,18 @@ function UsersPage({ plusIcon }) {
   return (
     <div className="content mt-5">
       <h2 className="text-center mt-5">Users</h2>
-      {success && (
-        <div
-          className="m-auto bg-success text-light w-25 p-3 text-center"
-          style={{ position: "relative", top: "51%" }}
-        >
-          {success}
-        </div>
-      )}
+      <SuccessMessage
+        message={userSuccess}
+        clearSuccess={() => dispatch(setSuccess(null))}
+      />
+      <ErrorMessage
+        message={userError}
+        clearError={() => dispatch(setError(null))}
+      />
+      <ErrorMessage
+        message={authError}
+        clearError={() => dispatch(setError(null))}
+      />
       <div className="text-center my-3 mt-5">
         <Link to="/add-user">
           <FontAwesomeIcon icon={plusIcon} className="addUserButton fa-3x" />
@@ -69,7 +75,9 @@ function UsersPage({ plusIcon }) {
               <td>{user.email}</td>
               <td>{user.created_at}</td>
               <td>
-                <button className="btn btn-success">Edit</button>
+                <Link to={`/edit-user/${user.id}`}>
+                  <button className="btn btn-success">Edit</button>
+                </Link>
               </td>
               <td>
                 <button

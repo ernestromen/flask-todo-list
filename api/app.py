@@ -75,7 +75,7 @@ def create_user():
     new_user = User(
     username=data.get("username"),
     email=data.get("email"),
-    password=data.get("password")  # Reminder: hash this in real apps!
+    password=data.get("password")
 )
 
     try:
@@ -103,10 +103,43 @@ def login_user():
     else:
         return jsonify({"error": "User not found"}), 404
 
+@app.route('/edit-user/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    return jsonify({
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "password": user.password
+    })
+
+@app.route('/edit-user', methods=['POST'])
+def update_user():
+    
+    data = request.get_json()
+    user_id = data.get("id")
+    user = User.query.get(user_id)
+
+    user.username = data.get("username")
+    user.email = data.get("email")
+    user.password = data.get("password")
+
+    try:
+        db.session.commit()
+        return jsonify({"message": "User updated successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500  # Return the actual error message here  
+
 @app.route('/delete-user', methods=['POST'])
 def delete_user():
     data = request.get_json()
     user_id = data.get("id")
+    user = User.query.get(user_id)
 
     if not user_id:
         return jsonify({"error": "No user ID provided"}), 400

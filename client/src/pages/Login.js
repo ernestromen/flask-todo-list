@@ -1,6 +1,7 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { logInUser,setError } from "../features/auth/authSlice";
+import { logInUser, setError } from "../features/auth/authSlice";
+import ErrorMessage from "../pages/ErrorMessage";
 
 function Login() {
   const [password, setPassword] = useState("");
@@ -17,7 +18,7 @@ function Login() {
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [error,dispatch]);
+  }, [error, dispatch]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,11 +43,10 @@ function Login() {
   return (
     <div className="content mt-5">
       <h2 className="text-center mt-5">Login User</h2>
-      {error && (
-        <div className="m-auto bg-danger text-light w-25 p-3 text-center errorDisplayBox">
-          Error: {error.error || error}
-        </div>
-      )}
+      <ErrorMessage
+        message={error}
+        clearError={() => dispatch(setError(null))}
+      />
       <form
         className="p-4 border rounded shadow-sm"
         style={{ maxWidth: "400px", margin: "0 auto" }}

@@ -5,7 +5,7 @@ function Sidebar() {
   return (
     <div className="sidebar">
       <Link className="active" to="/">
-        Home
+        Users
       </Link>
       <Link to="/login">Login</Link>
       <Link to="/add-user">Add User</Link>

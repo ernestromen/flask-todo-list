@@ -18,6 +18,14 @@ export default {
   addUser(formData) {
     return axios.post("http://localhost:5000/add-user", formData);
   },
+  updateUser(formData) {
+    return axios.post(`http://localhost:5000/edit-user`, formData, {
+      withCredentials: true,
+    });
+  },
+  getUser(id) {
+    return axios.get(`http://localhost:5000/edit-user/${id}`);
+  },
   deleteUser(id) {
     return axios.post("http://localhost:5000/delete-user", { id });
   },
