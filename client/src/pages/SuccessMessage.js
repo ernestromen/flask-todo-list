@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const SuccessMessage = ({ message, clearSuccess, duration = 3000 }) => {
+const SuccessMessage = ({ message }) => {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
@@ -8,12 +8,9 @@ const SuccessMessage = ({ message, clearSuccess, duration = 3000 }) => {
       setVisible(true);
       const timer = setTimeout(() => {
         setVisible(false);
-        if (clearSuccess) clearSuccess();
-      }, duration);
-
-      return () => clearTimeout(timer);
+      }, 3000);
     }
-  }, [message, clearSuccess, duration]);
+  }, [message]);
 
   if (!visible || !message) return null;
 

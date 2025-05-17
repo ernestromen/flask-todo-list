@@ -60,7 +60,6 @@ function EditUser() {
       />
       <ErrorMessage
         message={error}
-        clearError={() => dispatch(setError(null))}
       />
       <form
         className="p-4 border rounded shadow-sm mt-3"

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const ErrorMessage = ({ message, clearError, duration = 3000 }) => {
+const ErrorMessage = ({ message }) => {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
@@ -8,12 +8,9 @@ const ErrorMessage = ({ message, clearError, duration = 3000 }) => {
       setVisible(true);
       const timer = setTimeout(() => {
         setVisible(false);
-        if (clearError) clearError();
-      }, duration);
-
-      return () => clearTimeout(timer);
+      }, 3000);
     }
-  }, [message, clearError, duration]);
+  }, [message]);
 
   if (!visible || !message) return null;
 

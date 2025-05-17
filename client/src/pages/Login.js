@@ -45,7 +45,6 @@ function Login() {
       <h2 className="text-center mt-5">Login User</h2>
       <ErrorMessage
         message={error}
-        clearError={() => dispatch(setError(null))}
       />
       <form
         className="p-4 border rounded shadow-sm"

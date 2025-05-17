@@ -43,15 +43,12 @@ function AddUser() {
       <h2 className="text-center mt-5">Add User</h2>
       <SuccessMessage
         message={success}
-        clearSuccess={() => dispatch(setSuccess(null))}
       />
       <ErrorMessage
         message={error}
-        clearError={() => dispatch(setError(null))}
       />
       <ErrorMessage
         message={authError}
-        clearError={() => dispatch(setError(null))}
       />
       <form
         className="p-4 border rounded shadow-sm"

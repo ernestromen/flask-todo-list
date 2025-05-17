@@ -43,15 +43,12 @@ function UsersPage({ plusIcon }) {
       <h2 className="text-center mt-5">Users</h2>
       <SuccessMessage
         message={userSuccess}
-        clearSuccess={() => dispatch(setSuccess(null))}
       />
       <ErrorMessage
         message={userError}
-        clearError={() => dispatch(setError(null))}
       />
       <ErrorMessage
         message={authError}
-        clearError={() => dispatch(setError(null))}
       />
       <div className="text-center my-3 mt-5">
         <Link to="/add-user">
