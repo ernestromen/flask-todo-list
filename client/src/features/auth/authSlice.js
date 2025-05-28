@@ -7,7 +7,7 @@ export const logInUser = createAsyncThunk(
     try {
       let response = await UserAPI.login(formData);
 
-      dispatch(setLoggedIn({ isLoggedIn: true, user: response.data.username }));
+      dispatch(setLoggedIn({ isLoggedIn: true, currentUser: response.data }));
 
       return response.data;
     } catch (err) {
@@ -53,7 +53,7 @@ export const checkLogin = createAsyncThunk(
 
 const initialState = {
   isLoggedIn: false,
-  user: null,
+  currentUser: null,
   loading: null,
   error: null,
   success: null,
@@ -64,8 +64,8 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setLoggedIn: (state, action) => {
-      state.isLoggedIn = action.payload;
-      state.user = action.payload.user;
+      state.isLoggedIn = action.payload.isLoggedIn;
+      state.currentUser = action.payload.user;
     },
     setError: (state, action) => {
       state.error = action.payload;
@@ -77,7 +77,7 @@ const authSlice = createSlice({
         state.loading = true;
       })
       .addCase(logInUser.fulfilled, (state, action) => {
-        state.users = action.payload;
+        state.currentUser = action.payload;
         state.loading = false;
       })
       .addCase(logInUser.rejected, (state, action) => {
@@ -88,6 +88,7 @@ const authSlice = createSlice({
         state.loading = true;
       })
       .addCase(logOutUser.fulfilled, (state, action) => {
+        state.currentUser = null;
         state.users = action.payload;
         state.loading = false;
         state.success = true;
@@ -102,12 +103,12 @@ const authSlice = createSlice({
       .addCase(checkLogin.fulfilled, (state, action) => {
         state.loading = false;
         state.isLoggedIn = action.payload.loggedIn;
-        state.user = action.payload.user.username;
+        state.currentUser = action.payload.user;
       })
       .addCase(checkLogin.rejected, (state, action) => {
         state.loading = false;
         state.isLoggedIn = false;
-        state.user = null;
+        state.currentUser = null;
         state.error = action.payload;
       });
   },

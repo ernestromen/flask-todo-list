@@ -6,6 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
+from sqlalchemy import text
+from collections import defaultdict
 
 app = Flask(__name__)
 app.secret_key = 'your_super_secret_key'
@@ -30,25 +32,103 @@ class User(db.Model):
     password = db.Column(db.String(120))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+class Category(db.Model):
+    __tablename__ = 'categories'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+
+    products = db.relationship('Product', backref='category', lazy=True)
+
+
+class Product(db.Model):
+    __tablename__ = 'products'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Numeric(10, 2), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
+
 @app.route('/users')
 def index():
-    users = User.query.all()
+    query = text("""
+        SELECT u.id AS user_id, u.username, u.email, u.created_at,
+               r.name AS role_name, p.name AS permission_name
+        FROM users u
+        LEFT JOIN user_roles ur ON u.id = ur.user_id
+        LEFT JOIN roles r ON ur.role_id = r.id
+        LEFT JOIN role_permissions rp ON r.id = rp.role_id
+        LEFT JOIN permissions p ON rp.permission_id = p.id
+        ORDER BY u.id;
+    """)
 
-    users_list = [
+    result = db.session.execute(query).mappings()
+
+    users_dict = {}
+
+    for row in result:
+        user_id = row['user_id']
+        if user_id not in users_dict:
+            users_dict[user_id] = {
+                'id': user_id,
+                'username': row['username'],
+                'email': row['email'],
+                'created_at': row['created_at'],
+                'roles': defaultdict(list)
+            }
+
+        if row['role_name'] and row['permission_name']:
+            users_dict[user_id]['roles'][row['role_name']].append(row['permission_name'])
+
+    # Convert defaultdicts to dicts for JSON serialization
+    for user in users_dict.values():
+        user['roles'] = {role: perms for role, perms in user['roles'].items()}
+
+    return jsonify(list(users_dict.values()))
+
+@app.route('/categories', methods=['GET'])
+def get_categories():
+    categories = Category.query.all()
+    return jsonify([
         {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-            "created_at": user.created_at
-        } for user in users
-    ]
-    return jsonify(users_list)
+            'id': category.id,
+            'name': category.name
+        } for category in categories
+    ])
 
-# @app.route('/user/<int:id>')
-# def getUserById():
+@app.route('/products', methods=['GET'])
+def get_products():
+    products = Product.query.all()
+    return jsonify([
+        {
+            'id': product.id,
+            'name': product.name,
+            'price': float(product.price),
+            'category': {
+                'id': product.category.id,
+                'name': product.category.name
+            } if product.category else None
+        } for product in products
+    ])
 
+@app.route('/category/<int:category_id>', methods=['GET'])
+def get_category_with_products(category_id):
+    category = Category.query.get(category_id)
 
+    if not category:
+        return jsonify({"error": "Category not found"}), 404
 
+    return jsonify({
+        "id": category.id,
+        "name": category.name,
+        "products": [
+            {
+                "id": product.id,
+                "name": product.name,
+                "price": float(product.price)
+            } for product in category.products
+        ]
+    })
 
 @app.route('/api/v1.0/test', methods=['GET'])
 def test_response():
@@ -94,11 +174,34 @@ def login_user():
     user = User.query.filter_by(email=email, password=password).first()
     if user:
         session['user_id'] = user.id
+
+        # SQL query to fetch roles and permissions for the user
+        query = text("""
+            SELECT r.name AS role_name, p.name AS permission_name
+            FROM users u
+            JOIN user_roles ur ON u.id = ur.user_id
+            JOIN roles r ON ur.role_id = r.id
+            JOIN role_permissions rp ON r.id = rp.role_id
+            JOIN permissions p ON rp.permission_id = p.id
+            WHERE u.id = :user_id
+        """)
+        result = db.session.execute(query, {'user_id': user.id}).mappings()
+
+        # Structure the results into roles with their permissions
+        # from collections import defaultdict
+        roles = defaultdict(set)
+        for row in result:
+            roles[row['role_name']].add(row['permission_name'])
+
+        # Convert sets to lists
+        roles = {role: list(perms) for role, perms in roles.items()}
+
         return jsonify({
             "id": user.id,
             "username": user.username,
             "email": user.email,
-            "created_at": user.created_at
+            "created_at": user.created_at,
+            "roles": roles  # This is where the permissions are included
         })
     else:
         return jsonify({"error": "User not found"}), 404
@@ -163,17 +266,46 @@ def logout():
 @app.route('/check-login')
 def checkLogin():
     user_id = session.get('user_id')
-    if user_id:
-        user = User.query.get(user_id)
-        if user:
-            return jsonify({"loggedIn": True, "user": {
-                    "id": user.id,
-                    "email": user.email,
-                    "username": user.username
-                }})
+    if not user_id:
+        return jsonify({"loggedIn": False, "user": {}})
 
-    return jsonify({"loggedIn": False,"user":{}})
+    # One query to fetch user info + roles + permissions
+    query = text("""
+        SELECT u.id, u.username, u.email, u.created_at,
+               r.name AS role_name, p.name AS permission_name
+        FROM users u
+        JOIN user_roles ur ON u.id = ur.user_id
+        JOIN roles r ON ur.role_id = r.id
+        JOIN role_permissions rp ON r.id = rp.role_id
+        JOIN permissions p ON rp.permission_id = p.id
+        WHERE u.id = :user_id
+    """)
 
+    result = db.session.execute(query, {'user_id': user_id}).mappings().all()
 
+    if not result:
+        return jsonify({"loggedIn": False, "user": {}})
+
+    # Get user info from first row
+    first_row = result[0]
+    user_info = {
+        "id": first_row["id"],
+        "username": first_row["username"],
+        "email": first_row["email"],
+        "created_at": first_row["created_at"],
+        "roles": {}
+    }
+
+    # Collect roles and permissions
+    roles = defaultdict(set)
+    for row in result:
+        roles[row["role_name"]].add(row["permission_name"])
+    user_info["roles"] = {role: list(perms) for role, perms in roles.items()}
+
+    return jsonify({
+        "loggedIn": True,
+        "user": user_info
+    })
+ 
 if __name__ == '__main__':
     app.run(debug=True)

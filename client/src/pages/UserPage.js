@@ -10,6 +10,7 @@ import {
 } from "../features/users/userSlice";
 import ErrorMessage from "../pages/ErrorMessage";
 import SuccessMessage from "../pages/SuccessMessage";
+import DeleteButton from "../pages/DeleteButton.js";
 
 function UsersPage({ plusIcon }) {
   const {
@@ -18,7 +19,7 @@ function UsersPage({ plusIcon }) {
     users,
     loading,
   } = useSelector((state) => state.user);
-  const { error: authError } = useSelector((state) => state.auth);
+  const { error: authError, currentUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const handleDeletion = (id) => {
@@ -41,15 +42,9 @@ function UsersPage({ plusIcon }) {
   return (
     <div className="content mt-5">
       <h2 className="text-center mt-5">Users</h2>
-      <SuccessMessage
-        message={userSuccess}
-      />
-      <ErrorMessage
-        message={userError}
-      />
-      <ErrorMessage
-        message={authError}
-      />
+      <SuccessMessage message={userSuccess} />
+      <ErrorMessage message={userError} />
+      <ErrorMessage message={authError} />
       <div className="text-center my-3 mt-5">
         <Link to="/add-user">
           <FontAwesomeIcon icon={plusIcon} className="addUserButton fa-3x" />
@@ -77,12 +72,9 @@ function UsersPage({ plusIcon }) {
                 </Link>
               </td>
               <td>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => handleDeletion(user.id)}
-                >
-                  Delete
-                </button>
+                {Object.values(currentUser.roles || {}).some((permissions) =>
+                  permissions.includes("delete_users")
+                ) && <DeleteButton user={user} />}
               </td>
             </tr>
           ))}

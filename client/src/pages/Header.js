@@ -36,7 +36,7 @@ function Header() {
                     <FontAwesomeIcon
                       className="cursor-pointer"
                       icon={faUser}
-                      title={user}
+                      title={user.username}
                     />
                   ) : (
                     <FontAwesomeIcon
