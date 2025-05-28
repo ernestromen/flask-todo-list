@@ -50,12 +50,14 @@ function UsersPage({ plusIcon }) {
           <FontAwesomeIcon icon={plusIcon} className="addUserButton fa-3x" />
         </Link>
       </div>
-      <table className="w-50 m-auto  table-bordered">
+      <table className="w-75 m-auto  table-bordered">
         <thead>
           <tr>
             <th>username</th>
             <th>email</th>
             <th>created at</th>
+            <th>Role</th>
+            <th>Permission</th>
             <th></th>
             <th></th>
           </tr>
@@ -66,6 +68,12 @@ function UsersPage({ plusIcon }) {
               <td>{user.username}</td>
               <td>{user.email}</td>
               <td>{user.created_at}</td>
+              <td>{Object.keys(user.roles || {}).join(", ")}</td>
+              <td>
+                {Object.values(user.roles || {})
+                  .flat()
+                  .join(", ")}
+              </td>
               <td>
                 <Link to={`/edit-user/${user.id}`}>
                   <button className="btn btn-success">Edit</button>
