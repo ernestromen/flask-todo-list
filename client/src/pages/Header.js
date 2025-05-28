@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 
 function Header() {
-  const { isLoggedIn, user } = useSelector((state) => state.auth);
+  const { isLoggedIn, currentUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
@@ -32,11 +32,11 @@ function Header() {
             <div className="col-xl-2 col-md-3 col-sm-5 col-6 pt-3 order-md-3 order-sm-2 order-3">
               <div className="row">
                 <div className="col-6">
-                  {user ? (
+                  {currentUser ? (
                     <FontAwesomeIcon
                       className="cursor-pointer"
                       icon={faUser}
-                      title={user.username}
+                      title={currentUser.username}
                     />
                   ) : (
                     <FontAwesomeIcon
