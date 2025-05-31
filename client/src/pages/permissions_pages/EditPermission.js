@@ -12,7 +12,7 @@ import ErrorMessage from "../../pages/ErrorMessage";
 import SuccessMessage from "../../pages/SuccessMessage";
 import Select from "react-select";
 
-function EditRole() {
+function EditPermission() {
   const [roleName, setRoleName] = useState("");
   const [description, setDescription] = useState("");
   const [permissionName, setPermission] = useState("");
@@ -71,7 +71,7 @@ function EditRole() {
   let countries = [{ label: "angola", value: "hello afrika" }];
   return (
     <div className="content mt-5">
-      <h2 className="text-center mt-5">Edit Role</h2>
+      <h2 className="text-center mt-5">Edit Permission</h2>
       <SuccessMessage
         message={success}
         clearSuccess={() => dispatch(setSuccess(null))}
@@ -129,4 +129,4 @@ function EditRole() {
   );
 }
 
-export default EditRole;
+export default EditPermission;

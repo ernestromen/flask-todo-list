@@ -9,6 +9,10 @@ import AddRole from "../pages/role_pages/AddRole";
 import RolePage from "../pages/role_pages/RolePage";
 import EditRole from "../pages/role_pages/EditRole";
 
+import PermissionPage from "../pages/permissions_pages/PermissionPage";
+import AddPermission from "../pages/permissions_pages/AddPermission";
+import EditPermission from "../pages/permissions_pages/EditPermission";
+
 import About from "../pages/About";
 
 import Login from "../pages/user_pages/Login";
@@ -46,8 +50,21 @@ function AppRoutes() {
           )
         }
       />
+      <Route
+        path="/permissions"
+        element={
+          isLoggedIn ? (
+            <PermissionPage plusIcon={faPlus} />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      />
+
       <Route path="/add-user" element={<AddUser />} />
       <Route path="/add-role" element={<AddRole />} />
+      <Route path="/add-permission" element={<AddPermission />} />
+      <Route path="/edit-permission/:id" element={<EditPermission />} />
 
       <Route path="/edit-user/:id" element={<EditUser />} />
       <Route path="/edit-role/:id" element={<EditRole />} />

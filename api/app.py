@@ -340,7 +340,9 @@ def get_permissions():
     return jsonify([
         {
             'id': permission.id,
-            'name': permission.name
+            'name': permission.name,
+            'description': permission.description
+
         } for permission in permissions
     ])
 
