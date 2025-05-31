@@ -49,6 +49,20 @@ class Product(db.Model):
     price = db.Column(db.Numeric(10, 2), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
 
+
+class Role(db.Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(100), nullable=False)
+
+class Permission(db.Model):
+    __tablename__ = 'permissions'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(100), nullable=False)
+
+
 @app.route('/users')
 def index():
     query = text("""
@@ -149,7 +163,6 @@ def test_response():
 @app.route('/add-user', methods=['POST'])
 def create_user():
     
-    print('sup bitch')
     data = request.get_json()
 
     new_user = User(
@@ -256,6 +269,80 @@ def delete_user():
     db.session.commit()
 
     return jsonify({"message": f"User {user_id} deleted successfully","id": user_id})
+
+@app.route('/edit-role/<int:role_id>', methods=['GET'])
+def get_role(role_id):
+    role = Role.query.get(role_id)
+
+    if not role:
+        return jsonify({"error": "Role not found"}), 404
+
+    return jsonify({
+        "id": role.id,
+        "name": role.name,
+        "description": role.description,
+
+    })
+
+@app.route('/edit-role', methods=['POST'])
+def update_role():
+    
+    data = request.get_json()
+    role_id = data.get("id")
+    role = Role.query.get(role_id)
+
+    role.name = data.get("username")
+    role.decription = data.get("email")
+    role.permissions = data.get("password")
+
+    try:
+        db.session.commit()
+        return jsonify({"message": "User updated successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500  # Return the actual error message here   
+
+@app.route('/delete-role', methods=['POST'])
+def delete_role():
+    data = request.get_json()
+    role_id = data.get("id")
+    role = Role.query.get(role_id)
+
+    if not role_id:
+        return jsonify({"error": "No user ID provided"}), 400
+
+    role = Role.query.get(role_id)
+
+    if not role:
+        return jsonify({"error": "Role not found"}), 404
+
+    db.session.delete(role)
+    db.session.commit()
+
+    return jsonify({"message": f"Role {role_id} deleted successfully","id": role_id})
+
+    if not role_id:
+        return jsonify({"error": "No user ID provided"}), 400
+
+    role = Role.query.get(role_id)
+
+    if not role:
+        return jsonify({"error": "Role not found"}), 404
+
+    db.session.delete(role)
+    db.session.commit()
+
+    return jsonify({"message": f"Role {role_id} deleted successfully","id": role_id})
+
+@app.route('/permissions', methods=['GET'])
+def get_permissions():
+    permissions = Permission.query.all()
+    return jsonify([
+        {
+            'id': permission.id,
+            'name': permission.name
+        } for permission in permissions
+    ])
 
 @app.route('/logout', methods=['POST'])
 def logout():

@@ -7,6 +7,8 @@ function Sidebar() {
       <Link className="active" to="/">
         Users
       </Link>
+      <Link to="/roles">Roles</Link>
+      <Link to="/permissions">Permissions</Link>
       <Link to="/login">Login</Link>
       <Link to="/add-user">Add User</Link>
       <Link to="/about">About</Link>

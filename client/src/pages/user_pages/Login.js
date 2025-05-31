@@ -1,44 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getUser,
-  updateUser,
-  setSuccess,
-  setError,
-} from "../features/users/userSlice";
-import { useParams } from "react-router-dom";
-import ErrorMessage from "../pages/ErrorMessage";
-import SuccessMessage from "../pages/SuccessMessage";
+import { logInUser, setError } from "../../features/auth/authSlice";
+import ErrorMessage from "../../pages/ErrorMessage";
 
-function EditUser() {
-  const [userName, setUserName] = useState("");
+function Login() {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
 
-  const { id } = useParams();
   const dispatch = useDispatch();
 
-  const { user, error, success, loading } = useSelector((state) => state.user);
+  const { error, loading } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(getUser(id));
-  }, []);
+    if (error) {
+      const timer = setTimeout(() => {
+        dispatch(setError(null));
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [error, dispatch]);
 
-  useEffect(() => {
-    setUserName(user.username);
-    setEmail(user.email);
-    setPassword(user.password);
-  }, [user]);
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     let formData = {
-      id,
-      username: userName,
       email: email,
       password: password,
     };
-    dispatch(updateUser(formData));
+
+    dispatch(logInUser(formData));
   };
 
   if (loading)
@@ -52,34 +42,13 @@ function EditUser() {
     );
   return (
     <div className="content mt-5">
-      <h2 className="text-center mt-5">Edit User</h2>
-
-      <SuccessMessage
-        message={success}
-        clearSuccess={() => dispatch(setSuccess(null))}
-      />
-      <ErrorMessage
-        message={error}
-      />
+      <h2 className="text-center mt-5">Login User</h2>
+      <ErrorMessage message={error} />
       <form
-        className="p-4 border rounded shadow-sm mt-3"
+        className="p-4 border rounded shadow-sm"
         style={{ maxWidth: "400px", margin: "0 auto" }}
         onSubmit={handleSubmit}
       >
-        <div className="mb-3">
-          <label htmlFor="username" className="form-label">
-            Username
-          </label>
-          <input
-            value={userName}
-            type="text"
-            className="form-control"
-            id="username"
-            placeholder="Enter your username"
-            onChange={(e) => setUserName(e.target.value)}
-          />
-        </div>
-
         <div className="mb-3">
           <label htmlFor="email" className="form-label">
             Email
@@ -100,6 +69,7 @@ function EditUser() {
           </label>
           <input
             value={password}
+            type="password"
             className="form-control"
             id="password"
             placeholder="Enter your password"
@@ -108,11 +78,11 @@ function EditUser() {
         </div>
 
         <button type="submit" className="btn btn-primary w-100">
-          Update
+          Log in
         </button>
       </form>
     </div>
   );
 }
 
-export default EditUser;
+export default Login;

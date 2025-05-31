@@ -7,12 +7,12 @@ import {
   deleteUser,
   setSuccess,
   setError,
-} from "../features/users/userSlice";
-import ErrorMessage from "../pages/ErrorMessage";
-import SuccessMessage from "../pages/SuccessMessage";
-import DeleteButton from "../pages/DeleteButton.js";
+} from "../../features/users/userSlice";
+import ErrorMessage from "../../pages/ErrorMessage";
+import SuccessMessage from "../../pages/SuccessMessage";
+import DeleteButton from "../../pages/DeleteButton.js";
 
-function UsersPage({ plusIcon }) {
+function RolePage({ plusIcon }) {
   const {
     error: userError,
     success: userSuccess,
@@ -41,21 +41,18 @@ function UsersPage({ plusIcon }) {
 
   return (
     <div className="content mt-5">
-      <h2 className="text-center mt-5">Users</h2>
+      <h2 className="text-center mt-5">Roles</h2>
       <SuccessMessage message={userSuccess} />
       <ErrorMessage message={userError} />
       <ErrorMessage message={authError} />
       <div className="text-center my-3 mt-5">
-        <Link to="/add-user">
-          <FontAwesomeIcon icon={plusIcon} className="addUserButton fa-3x" />
+        <Link to="/add-role">
+          <FontAwesomeIcon icon={plusIcon} className="addEntityButton fa-3x" />
         </Link>
       </div>
       <table className="w-75 m-auto  table-bordered">
         <thead>
           <tr>
-            <th>username</th>
-            <th>email</th>
-            <th>created at</th>
             <th>Role</th>
             <th>Permission</th>
             <th></th>
@@ -65,9 +62,6 @@ function UsersPage({ plusIcon }) {
         <tbody>
           {users.map((user) => (
             <tr key={user.id}>
-              <td>{user.username}</td>
-              <td>{user.email}</td>
-              <td>{user.created_at}</td>
               <td>{Object.keys(user.roles || {}).join(", ")}</td>
               <td>
                 {Object.values(user.roles || {})
@@ -75,7 +69,7 @@ function UsersPage({ plusIcon }) {
                   .join(", ")}
               </td>
               <td>
-                <Link to={`/edit-user/${user.id}`}>
+                <Link to={`/edit-role/${user.id}`}>
                   <button className="btn btn-success">Edit</button>
                 </Link>
               </td>
@@ -92,4 +86,4 @@ function UsersPage({ plusIcon }) {
   );
 }
 
-export default UsersPage;
+export default RolePage;
