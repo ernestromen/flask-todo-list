@@ -37,8 +37,8 @@ export const getPermission = createAsyncThunk(
 
   async (id, { dispatch, rejectWithValue }) => {
     try {
-      let response = await PermissionAPI.getRole(id);
-      dispatch(setRole(response.data));
+      let response = await PermissionAPI.getPermission(id);
+      dispatch(setPermission(response.data));
 
       return response.data;
     } catch (err) {
@@ -55,7 +55,7 @@ export const updatePermission = createAsyncThunk(
   async (formdata, { dispatch, rejectWithValue }) => {
     try {
       let response = await PermissionAPI.updatePermission(formdata);
-      dispatch(setRole(response.data));
+      dispatch(setPermission(response.data));
 
       return response.data;
     } catch (err) {
@@ -97,8 +97,8 @@ const roleSlice = createSlice({
     setUsers: (state, action) => {
       state.users = action.payload;
     },
-    setRole: (state, action) => {
-      state.role = action.payload;
+    setPermission: (state, action) => {
+      state.permission = action.payload;
     },
     setError: (state, action) => {
       state.error = action.payload;
@@ -173,6 +173,6 @@ const roleSlice = createSlice({
   },
 });
 
-export const { users, setUsers, setRole, setSuccess, setError } =
+export const { users, setUsers, setPermission, setSuccess, setError } =
   roleSlice.actions;
 export default roleSlice.reducer;

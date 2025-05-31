@@ -1,61 +1,41 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getRole,
-  updateRole,
-  setSuccess,
-  setError,
-} from "../../features/roles/roleSlice";
-import { getAllPermissions } from "../../features/permissions/permissionSlice";
+import { setSuccess,getAllPermissions,getPermission,updatePermission } from "../../features/permissions/permissionSlice";
 import { useParams } from "react-router-dom";
 import ErrorMessage from "../../pages/ErrorMessage";
 import SuccessMessage from "../../pages/SuccessMessage";
-import Select from "react-select";
 
 function EditPermission() {
-  const [roleName, setRoleName] = useState("");
   const [description, setDescription] = useState("");
-  const [permissionName, setPermission] = useState("");
-  const [permissionsList, setPermissionsList] = useState([]);
-  const [selectedPermissions, setSelectedPermissions] = useState([]);
+  const [permissionName, setPermissionName] = useState("");
 
   const { id } = useParams();
   const dispatch = useDispatch();
 
   const { role, error, success, loading } = useSelector((state) => state.role);
-  const { permissions } = useSelector((state) => state.permission);
+  const { permission,permissions } = useSelector((state) => state.permission);
+
   useEffect(() => {
-    dispatch(getRole(id));
+    dispatch(getPermission(id));
   }, []);
 
   useEffect(() => {
-    setRoleName(role.name);
-    setDescription(role.description);
-  }, [role]);
+    setPermissionName(permission.name);
+    setDescription(permission.description);
+  }, [permission]);
 
   useEffect(() => {
     dispatch(getAllPermissions());
   }, []);
 
-  useEffect(() => {
-    if (permissions.length > 0) {
-      const mapped = permissions.map((permission) => ({
-        label: permission.name,
-        value: permission.name,
-      }));
-      setPermissionsList(mapped);
-    }
-  }, [permissions]);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     let formData = {
       id,
-      name: roleName,
+      name: permissionName,
       description: description,
-      permissions: selectedPermissions.map((p) => p.value),
     };
-    dispatch(updateRole(formData));
+    dispatch(updatePermission(formData));
   };
 
   if (loading)
@@ -68,7 +48,6 @@ function EditPermission() {
       </div>
     );
 
-  let countries = [{ label: "angola", value: "hello afrika" }];
   return (
     <div className="content mt-5">
       <h2 className="text-center mt-5">Edit Permission</h2>
@@ -83,16 +62,16 @@ function EditPermission() {
         onSubmit={handleSubmit}
       >
         <div className="mb-3">
-          <label htmlFor="rolename" className="form-label">
+          <label htmlFor="permissionname" className="form-label">
             role name
           </label>
           <input
-            value={roleName}
+            value={permissionName}
             type="text"
             className="form-control"
             id="rolename"
-            placeholder="Enter your rolename"
-            onChange={(e) => setRoleName(e.target.value)}
+            placeholder="Enter your permission name"
+            onChange={(e) => setPermissionName(e.target.value)}
           />
         </div>
 
@@ -107,18 +86,6 @@ function EditPermission() {
             id="description"
             placeholder="Enter your description"
             onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="description" className="form-label">
-            Description
-          </label>
-
-          <Select
-            options={permissionsList}
-            isMulti
-            value={selectedPermissions}
-            onChange={setSelectedPermissions}
           />
         </div>
         <button type="submit" className="btn btn-primary w-100">

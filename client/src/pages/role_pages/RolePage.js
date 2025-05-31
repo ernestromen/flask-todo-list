@@ -8,6 +8,7 @@ import {
   setSuccess,
   setError,
 } from "../../features/users/userSlice";
+import { fetchAllRoles } from "../../features/roles/roleSlice";
 import ErrorMessage from "../../pages/ErrorMessage";
 import SuccessMessage from "../../pages/SuccessMessage";
 import DeleteButton from "../../pages/DeleteButton.js";
@@ -16,9 +17,9 @@ function RolePage({ plusIcon }) {
   const {
     error: userError,
     success: userSuccess,
-    users,
+    roles,
     loading,
-  } = useSelector((state) => state.user);
+  } = useSelector((state) => state.role);
   const { error: authError, currentUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
@@ -26,7 +27,7 @@ function RolePage({ plusIcon }) {
     dispatch(deleteUser(id));
   };
   useEffect(() => {
-    dispatch(fetchAllUsers());
+    dispatch(fetchAllRoles());
   }, []);
 
   if (loading)
@@ -60,23 +61,23 @@ function RolePage({ plusIcon }) {
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td>{Object.keys(user.roles || {}).join(", ")}</td>
+          {roles.map((role) => (
+            <tr key={role.id}>
+              <td>{role.name}</td>
               <td>
-                {Object.values(user.roles || {})
-                  .flat()
-                  .join(", ")}
+                {role.permissions
+                  .map((permission) => permission.name)
+                  .join(",")}
               </td>
               <td>
-                <Link to={`/edit-role/${user.id}`}>
+                <Link to={`/edit-role/${role.id}`}>
                   <button className="btn btn-success">Edit</button>
                 </Link>
               </td>
               <td>
-                {Object.values(currentUser.roles || {}).some((permissions) =>
-                  permissions.includes("delete_users")
-                ) && <DeleteButton user={user} />}
+                {Object.values(currentUser.permissions || {}).some(
+                  (permissions) => permissions.includes("delete_users")
+                ) && <DeleteButton role={role} />}
               </td>
             </tr>
           ))}

@@ -80,7 +80,7 @@ function UsersPage({ plusIcon }) {
                 </Link>
               </td>
               <td>
-                {Object.values(currentUser.roles || {}).some((permissions) =>
+                {Object.values(currentUser.permissions || {}).some((permissions) =>
                   permissions.includes("delete_users")
                 ) && <DeleteButton user={user} />}
               </td>

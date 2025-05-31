@@ -17,6 +17,22 @@ export const addRole = createAsyncThunk(
   }
 );
 
+export const fetchAllRoles = createAsyncThunk(
+  "auth/fetchAllRoles",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      let response = await RoleAPI.getAllRoles();
+      dispatch(setRoles(response.data));
+
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(
+        (err.response && err.response.data) || err.message
+      );
+    }
+  }
+);
+
 export const getRole = createAsyncThunk(
   "auth/getRole",
 
@@ -70,6 +86,7 @@ export const deleteRole = createAsyncThunk(
 const initialState = {
   users: [],
   role: [],
+  roles:[],
   loading: false,
   error: null,
   success: null,
@@ -84,6 +101,9 @@ const roleSlice = createSlice({
     },
     setRole: (state, action) => {
       state.role = action.payload;
+    },
+    setRoles: (state, action) => {
+      state.roles = action.payload;
     },
     setError: (state, action) => {
       state.error = action.payload;
@@ -146,6 +166,6 @@ const roleSlice = createSlice({
   },
 });
 
-export const { users, setUsers, setRole, setSuccess, setError } =
+export const { users, setUsers,setRoles, setRole, setSuccess, setError } =
   roleSlice.actions;
 export default roleSlice.reducer;

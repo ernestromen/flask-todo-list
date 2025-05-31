@@ -24,6 +24,8 @@ function EditRole() {
 
   const { role, error, success, loading } = useSelector((state) => state.role);
   const { permissions } = useSelector((state) => state.permission);
+  const { currentUser } = useSelector((state) => state.auth);
+
   useEffect(() => {
     dispatch(getRole(id));
   }, []);
@@ -38,14 +40,20 @@ function EditRole() {
   }, []);
 
   useEffect(() => {
-    if (permissions.length > 0) {
-      const mapped = permissions.map((permission) => ({
-        label: permission.name,
-        value: permission.name,
+    if (currentUser && currentUser.permissions && permissions.length > 0) {
+      const allOptions = permissions.map((p) => ({
+        label: p.name,
+        value: p.name,
       }));
-      setPermissionsList(mapped);
+
+      const userSelected = allOptions.filter((opt) =>
+        currentUser.permissions.includes(opt.value)
+      );
+
+      setPermissionsList(allOptions); // full list
+      setSelectedPermissions(userSelected); // only selected ones
     }
-  }, [permissions]);
+  }, [currentUser, permissions]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -110,8 +118,8 @@ function EditRole() {
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="description" className="form-label">
-            Description
+          <label htmlFor="permissions" className="form-label">
+            Permissions
           </label>
 
           <Select

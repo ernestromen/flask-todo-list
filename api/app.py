@@ -198,24 +198,29 @@ def login_user():
             JOIN permissions p ON rp.permission_id = p.id
             WHERE u.id = :user_id
         """)
-        result = db.session.execute(query, {'user_id': user.id}).mappings()
+        result = db.session.execute(query, {'user_id': user.id}).mappings().all()
 
-        # Structure the results into roles with their permissions
-        # from collections import defaultdict
-        roles = defaultdict(set)
-        for row in result:
-            roles[row['role_name']].add(row['permission_name'])
-
-        # Convert sets to lists
-        roles = {role: list(perms) for role, perms in roles.items()}
-
-        return jsonify({
+        first_row = result[0]
+        user_info = {first_row}
+        user_info = {
             "id": user.id,
             "username": user.username,
             "email": user.email,
             "created_at": user.created_at,
-            "roles": roles  # This is where the permissions are included
-        })
+            "roles": {},
+            "permissions":{}
+        }
+
+        roles = set()
+        permissions = set()
+
+        for row in result:
+            roles.add(row["role_name"])
+            permissions.add(row["permission_name"])
+        user_info["roles"] = list(roles)
+        user_info["permissions"] = list(permissions)
+
+        return jsonify(user_info)
     else:
         return jsonify({"error": "User not found"}), 404
 
@@ -269,6 +274,48 @@ def delete_user():
     db.session.commit()
 
     return jsonify({"message": f"User {user_id} deleted successfully","id": user_id})
+
+@app.route('/add-role', methods=['POST'])
+def create_role():
+    
+    data = request.get_json()
+
+#     new_user = User(
+#     username=data.get("username"),
+#     email=data.get("email"),
+#     password=data.get("password")
+# )
+
+#     try:
+#         db.session.add(new_user)
+#         db.session.commit()
+#         return jsonify({'message': 'User created', 'user': {'email': new_user.email}}), 201
+#     except Exception as e:
+#         db.session.rollback()
+#         return jsonify({'error': str(e)}), 400
+
+@app.route('/roles', methods=['GET'])
+def get_roles():
+    query = text("""select r.id as role_id, r.name as role_name,r.description as role_description,p.id as permission_id, p.name as permission_name from roles r join role_permissions pr on r.id = pr.role_id join permissions p on p.id = pr.permission_id""")
+    result = db.session.execute(query).mappings()
+
+    roles_dict = defaultdict(lambda: {'id': None, 'name': '', 'description': '', 'permissions': []})
+
+    for row in result:
+        role_id = row['role_id']
+        if roles_dict[role_id]['id'] is None:
+            roles_dict[role_id].update({
+                'id': role_id,
+                'name': row['role_name'],
+                'description': row['role_description'],
+                'permissions': []
+            })
+        roles_dict[role_id]['permissions'].append({
+            'id': row['permission_id'],
+            'name': row['permission_name']
+        })
+
+    return jsonify(list(roles_dict.values()))
 
 @app.route('/edit-role/<int:role_id>', methods=['GET'])
 def get_role(role_id):
@@ -334,6 +381,20 @@ def delete_role():
 
     return jsonify({"message": f"Role {role_id} deleted successfully","id": role_id})
 
+
+@app.route('/edit-permission/<int:permission_id>', methods=['GET'])
+def get_permission(permission_id):
+    permission = Permission.query.get(permission_id)
+
+    if not permission:
+        return jsonify({"error": "Role not found"}), 404
+
+    return jsonify({
+        "id": permission.id,
+        "name": permission.name,
+        "description": permission.description,
+
+    })
 @app.route('/permissions', methods=['GET'])
 def get_permissions():
     permissions = Permission.query.all()
@@ -382,14 +443,19 @@ def checkLogin():
         "username": first_row["username"],
         "email": first_row["email"],
         "created_at": first_row["created_at"],
-        "roles": {}
+        "roles": {},
+        "permissions":{}
     }
 
     # Collect roles and permissions
-    roles = defaultdict(set)
+    roles = set()
+    permissions = set()
+
     for row in result:
-        roles[row["role_name"]].add(row["permission_name"])
-    user_info["roles"] = {role: list(perms) for role, perms in roles.items()}
+        roles.add(row["role_name"])
+        permissions.add(row["permission_name"])
+    user_info["roles"] = list(roles)
+    user_info["permissions"] = list(permissions)
 
     return jsonify({
         "loggedIn": True,

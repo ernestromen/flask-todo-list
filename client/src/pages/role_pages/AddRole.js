@@ -1,13 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser, setSuccess, setError } from "../../features/users/userSlice";
 import ErrorMessage from "../../pages/ErrorMessage";
 import SuccessMessage from "../../pages/SuccessMessage";
+import Select from "react-select";
+import {
+  getRole,
+  updateRole,
+  setSuccess,
+  setError,
+} from "../../features/roles/roleSlice";
+import { getAllPermissions } from "../../features/permissions/permissionSlice";
 
 function AddRole() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+
+  const [permissionsList, setPermissionsList] = useState([]);
+  const [selectedPermissions, setSelectedPermissions] = useState([]);
+
+  const { currentUser } = useSelector((state) => state.auth);
+  const { permissions } = useSelector((state) => state.permission);
+
   const { error, success, loading } = useSelector((state) => state.user);
 
   const { error: authError } = useSelector((state) => state.auth);
@@ -22,11 +36,25 @@ function AddRole() {
       password: password,
     };
 
-    dispatch(addUser(formData));
     setUserName("");
     setEmail("");
     setPassword("");
   };
+
+  useEffect(() => {
+    dispatch(getAllPermissions());
+  }, []);
+
+  useEffect(() => {
+    if (permissions && permissions.length > 0) {
+      const allOptions = permissions.map((p) => ({
+        label: p.name,
+        value: p.name,
+      }));
+
+      setPermissionsList(allOptions); // full list
+    }
+  }, [permissions]);
 
   if (loading)
     return (
@@ -40,6 +68,7 @@ function AddRole() {
 
   return (
     <div className="content mt-5">
+      {console.log("Permissions:", permissions)}
       <h2 className="text-center mt-5">Add Role</h2>
       <SuccessMessage message={success} />
       <ErrorMessage message={error} />
@@ -75,7 +104,18 @@ function AddRole() {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
+        <div className="mb-3">
+          <label htmlFor="permissions" className="form-label">
+            Permissions
+          </label>
 
+          <Select
+            options={permissionsList}
+            isMulti
+            value={selectedPermissions}
+            onChange={setSelectedPermissions}
+          />
+        </div>
         <button type="submit" className="btn btn-primary w-100">
           Add Role
         </button>
