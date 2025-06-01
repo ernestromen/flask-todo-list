@@ -6,7 +6,7 @@ const ErrorMessage = ({ message }) => {
   useEffect(() => {
     if (message) {
       setVisible(true);
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         setVisible(false);
       }, 3000);
     }

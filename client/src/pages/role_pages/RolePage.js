@@ -2,11 +2,10 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-import { deleteUser } from "../../features/users/userSlice";
+import { deleteRole } from "../../features/roles/roleSlice";
 import { fetchAllRoles } from "../../features/roles/roleSlice";
 import ErrorMessage from "../../pages/ErrorMessage";
 import SuccessMessage from "../../pages/SuccessMessage";
-import DeleteButton from "../../pages/DeleteButton.js";
 
 function RolePage({ plusIcon }) {
   const {
@@ -19,7 +18,7 @@ function RolePage({ plusIcon }) {
   const dispatch = useDispatch();
 
   const handleDeletion = (id) => {
-    dispatch(deleteUser(id));
+    dispatch(deleteRole(id));
   };
   useEffect(() => {
     dispatch(fetchAllRoles());
@@ -72,7 +71,14 @@ function RolePage({ plusIcon }) {
               <td>
                 {Object.values(currentUser.permissions || {}).some(
                   (permissions) => permissions.includes("delete_users")
-                ) && <DeleteButton role={role} />}
+                ) && (
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => handleDeletion(role.id)}
+                  >
+                    Delete
+                  </button>
+                )}
               </td>
             </tr>
           ))}

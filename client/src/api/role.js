@@ -8,7 +8,7 @@ export default {
     return axios.get("http://localhost:5000/roles");
   },
   updateRole(formData) {
-    return axios.post(`http://localhost:5000/edit-role`, formData, {
+    return axios.put(`http://localhost:5000/edit-role`, formData, {
       withCredentials: true,
     });
   },
@@ -16,6 +16,9 @@ export default {
     return axios.get(`http://localhost:5000/edit-role/${id}`);
   },
   deleteRole(id) {
-    return axios.post("http://localhost:5000/delete-role", { id });
+    return axios.delete("http://localhost:5000/delete-role", {
+      headers: { "Content-Type": "application/json" },
+      data: { id },
+    });
   },
 };

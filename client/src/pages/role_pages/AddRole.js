@@ -4,18 +4,17 @@ import ErrorMessage from "../../pages/ErrorMessage";
 import SuccessMessage from "../../pages/SuccessMessage";
 import Select from "react-select";
 import { getAllPermissions } from "../../features/permissions/permissionSlice";
-
+import { addRole } from "../../features/roles/roleSlice";
 function AddRole() {
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
+  const [roleName, setRoleName] = useState("");
+  const [description, setDescription] = useState("");
 
   const [permissionsList, setPermissionsList] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
 
   const { permissions } = useSelector((state) => state.permission);
 
-  const { error, success, loading } = useSelector((state) => state.user);
+  const { error, success, loading } = useSelector((state) => state.role);
 
   const { error: authError } = useSelector((state) => state.auth);
 
@@ -24,14 +23,15 @@ function AddRole() {
   const handleSubmit = (e) => {
     e.preventDefault();
     let formData = {
-      username: userName,
-      email: email,
-      password: password,
+      name: roleName,
+      description: description,
+      permissions: selectedPermissions,
     };
 
-    setUserName("");
-    setEmail("");
-    setPassword("");
+    dispatch(addRole(formData));
+
+    setRoleName("");
+    setDescription("");
   };
 
   useEffect(() => {
@@ -75,12 +75,12 @@ function AddRole() {
             Username
           </label>
           <input
-            value={userName}
+            value={roleName}
             type="text"
             className="form-control"
             id="name"
             placeholder="Enter Role name"
-            onChange={(e) => setUserName(e.target.value)}
+            onChange={(e) => setRoleName(e.target.value)}
           />
         </div>
 
@@ -89,11 +89,11 @@ function AddRole() {
             Description
           </label>
           <textarea
-            value={email}
+            value={description}
             className="form-control"
             id="email"
             placeholder="Enter Description"
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </div>
         <div className="mb-3">

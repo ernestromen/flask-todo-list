@@ -44,8 +44,9 @@ function EditRole() {
         value: p.name,
       }));
 
+      const selectedPermissionNames = role.permissions.map((p) => p.name);
       const userSelected = allOptions.filter((opt) =>
-        currentUser.permissions.includes(opt.value)
+        selectedPermissionNames.includes(opt.value)
       );
 
       setPermissionsList(allOptions);
@@ -74,7 +75,6 @@ function EditRole() {
       </div>
     );
 
-  let countries = [{ label: "angola", value: "hello afrika" }];
   return (
     <div className="content mt-5">
       <h2 className="text-center mt-5">Edit Role</h2>

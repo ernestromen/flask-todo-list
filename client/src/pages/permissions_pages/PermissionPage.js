@@ -2,24 +2,19 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-import {
-  fetchAllUsers,
-  deleteUser
-} from "../../features/users/userSlice";
 import ErrorMessage from "../../pages/ErrorMessage";
 import SuccessMessage from "../../pages/SuccessMessage";
-import DeleteButton from "../../pages/DeleteButton.js";
-import { getAllPermissions,deletePermission } from "../../features/permissions/permissionSlice";
+import {
+  getAllPermissions,
+  deletePermission,
+} from "../../features/permissions/permissionSlice";
 
 function PermissionPage({ plusIcon }) {
-  const {
-    error: userError,
-    success: userSuccess,
-    loading,
-  } = useSelector((state) => state.user);
   const { error: authError } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const { permissions,success,error } = useSelector((state) => state.permission);
+  const { permissions, success, error, loading } = useSelector(
+    (state) => state.permission
+  );
 
   const handleDeletion = (id) => {
     dispatch(deletePermission(id));
@@ -27,10 +22,6 @@ function PermissionPage({ plusIcon }) {
 
   useEffect(() => {
     dispatch(getAllPermissions());
-  }, []);
-
-  useEffect(() => {
-    dispatch(fetchAllUsers());
   }, []);
 
   if (loading)
@@ -74,7 +65,12 @@ function PermissionPage({ plusIcon }) {
                 </Link>
               </td>
               <td>
-                <button className="btn btn-danger" onClick={() => handleDeletion(permission.id)}>Delete </button>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => handleDeletion(permission.id)}
+                >
+                  Delete{" "}
+                </button>
               </td>
             </tr>
           ))}

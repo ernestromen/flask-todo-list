@@ -8,6 +8,7 @@ from psycopg2.extras import RealDictCursor
 from datetime import datetime
 from sqlalchemy import text
 from collections import defaultdict
+from sqlalchemy.dialects.postgresql import JSON
 
 app = Flask(__name__)
 app.secret_key = 'your_super_secret_key'
@@ -49,12 +50,25 @@ class Product(db.Model):
     price = db.Column(db.Numeric(10, 2), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
 
+role_permissions = db.Table('role_permissions',
+    db.Column('role_id', db.Integer, db.ForeignKey('roles.id'), primary_key=True),
+    db.Column('permission_id', db.Integer, db.ForeignKey('permissions.id'), primary_key=True)
+)
+
 
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(100), nullable=False)
+
+    permissions = db.relationship(
+        'Permission',
+        secondary=role_permissions,
+        backref=db.backref('roles'),
+    )
+
+    
 
 class Permission(db.Model):
     __tablename__ = 'permissions'
@@ -101,7 +115,7 @@ def index():
     return jsonify(list(users_dict.values()))
 
 @app.route('/categories', methods=['GET'])
-def get_categories():
+def get_categfories():
     categories = Category.query.all()
     return jsonify([
         {
@@ -279,20 +293,25 @@ def delete_user():
 def create_role():
     
     data = request.get_json()
+    raw_permissions = data.get("permissions", [])
 
-#     new_user = User(
-#     username=data.get("username"),
-#     email=data.get("email"),
-#     password=data.get("password")
-# )
+    permission_names = [p['value'] for p in raw_permissions if isinstance(p, dict) and 'value' in p]
+    permissions = Permission.query.filter(Permission.name.in_(permission_names)).all()
 
-#     try:
-#         db.session.add(new_user)
-#         db.session.commit()
-#         return jsonify({'message': 'User created', 'user': {'email': new_user.email}}), 201
-#     except Exception as e:
-#         db.session.rollback()
-#         return jsonify({'error': str(e)}), 400
+    new_role = Role(
+    name=data.get("name"),
+    description=data.get("description"),
+    permissions=permissions
+)
+
+    try:
+        db.session.add(new_role)
+        db.session.commit()
+        return jsonify({'message': 'Role created successfully'}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
 
 @app.route('/roles', methods=['GET'])
 def get_roles():
@@ -319,37 +338,59 @@ def get_roles():
 
 @app.route('/edit-role/<int:role_id>', methods=['GET'])
 def get_role(role_id):
-    role = Role.query.get(role_id)
+    query = text("""
+        SELECT r.id AS role_id, r.name AS role_name, r.description AS role_description,
+               p.id AS permission_id, p.name AS permission_name
+        FROM roles r
+        JOIN role_permissions pr ON r.id = pr.role_id
+        JOIN permissions p ON p.id = pr.permission_id
+        WHERE r.id = :role_id
+    """)
+    result = db.session.execute(query, {'role_id': role_id}).mappings()
 
-    if not role:
+    role_data = {
+        'id': role_id,
+        'name': '',
+        'description': '',
+        'permissions': []
+    }
+
+    for row in result:
+        role_data['name'] = row['role_name']
+        role_data['description'] = row['role_description']
+        role_data['permissions'].append({
+            'id': row['permission_id'],
+            'name': row['permission_name']
+        })
+
+    if not role_data['name']:  # If role not found
         return jsonify({"error": "Role not found"}), 404
 
-    return jsonify({
-        "id": role.id,
-        "name": role.name,
-        "description": role.description,
+    return jsonify(role_data)
 
-    })
-
-@app.route('/edit-role', methods=['POST'])
+@app.route('/edit-role', methods=['PUT'])
 def update_role():
-    
+
     data = request.get_json()
     role_id = data.get("id")
     role = Role.query.get(role_id)
 
-    role.name = data.get("username")
-    role.decription = data.get("email")
-    role.permissions = data.get("password")
+    role.name = data.get("name")
+    role.description = data.get("description")
+    permission_names = data.get("permissions")
+    
+    permissions = Permission.query.filter(Permission.name.in_(permission_names)).all()
+
+    role.permissions = permissions
 
     try:
         db.session.commit()
-        return jsonify({"message": "User updated successfully"}), 200
+        return jsonify({"message": "Permission updated successfully"}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500  # Return the actual error message here   
 
-@app.route('/delete-role', methods=['POST'])
+@app.route('/delete-role', methods=['DELETE'])
 def delete_role():
     data = request.get_json()
     role_id = data.get("id")

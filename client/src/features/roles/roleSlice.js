@@ -86,7 +86,7 @@ export const deleteRole = createAsyncThunk(
 const initialState = {
   users: [],
   role: [],
-  roles:[],
+  roles: [],
   loading: false,
   error: null,
   success: null,
@@ -153,7 +153,7 @@ const roleSlice = createSlice({
       })
       .addCase(deleteRole.fulfilled, (state, action) => {
         const deletedId = action.payload.id;
-        state.users = state.users.filter((user) => user.id !== deletedId);
+        state.roles = state.roles.filter((role) => role.id !== deletedId);
         state.success = action.payload.message;
         state.loading = false;
       })
@@ -166,6 +166,6 @@ const roleSlice = createSlice({
   },
 });
 
-export const { users, setUsers,setRoles, setRole, setSuccess, setError } =
+export const { users, setUsers, setRoles, setRole, setSuccess, setError } =
   roleSlice.actions;
 export default roleSlice.reducer;

@@ -6,7 +6,7 @@ const SuccessMessage = ({ message }) => {
   useEffect(() => {
     if (message) {
       setVisible(true);
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         setVisible(false);
       }, 3000);
     }

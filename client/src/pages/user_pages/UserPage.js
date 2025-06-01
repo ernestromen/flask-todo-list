@@ -2,15 +2,9 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-import {
-  fetchAllUsers,
-  deleteUser,
-  setSuccess,
-  setError,
-} from "../../features/users/userSlice";
+import { fetchAllUsers, deleteUser } from "../../features/users/userSlice";
 import ErrorMessage from "../../pages/ErrorMessage";
 import SuccessMessage from "../../pages/SuccessMessage";
-import DeleteButton from "../../pages/DeleteButton.js";
 
 function UsersPage({ plusIcon }) {
   const {
@@ -80,9 +74,16 @@ function UsersPage({ plusIcon }) {
                 </Link>
               </td>
               <td>
-                {Object.values(currentUser.permissions || {}).some((permissions) =>
-                  permissions.includes("delete_users")
-                ) && <DeleteButton user={user} />}
+                {Object.values(currentUser.permissions || {}).some(
+                  (permissions) => permissions.includes("delete_users")
+                ) && (
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => handleDeletion(user.id)}
+                  >
+                    Delete
+                  </button>
+                )}
               </td>
             </tr>
           ))}
