@@ -381,6 +381,27 @@ def delete_role():
 
     return jsonify({"message": f"Role {role_id} deleted successfully","id": role_id})
 
+@app.route('/add-permission', methods=['POST'])
+def create_permission():
+    data = request.get_json()
+    existing = Permission.query.filter_by(name=data["name"]).first()
+    
+    if existing:
+        return jsonify({"error": "Permission name already exists"}), 400
+
+    new_permission = Permission(
+    name=data.get("name"),
+    description=data.get("description"),
+    )
+
+
+    try:
+        db.session.add(new_permission)
+        db.session.commit()
+        return jsonify({'message': 'Permission created'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
 
 @app.route('/edit-permission/<int:permission_id>', methods=['GET'])
 def get_permission(permission_id):
@@ -395,6 +416,24 @@ def get_permission(permission_id):
         "description": permission.description,
 
     })
+
+@app.route('/edit-permission', methods=['POST'])
+def update_permission():
+
+    data = request.get_json()
+    permission_id = data.get("id")
+    permission = Permission.query.get(permission_id)
+
+    permission.name = data.get("name")
+    permission.description = data.get("description")
+
+    try:
+        db.session.commit()
+        return jsonify({"message": "Permission updated successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500  # Return the actual error message here  
+
 @app.route('/permissions', methods=['GET'])
 def get_permissions():
     permissions = Permission.query.all()
@@ -406,6 +445,24 @@ def get_permissions():
 
         } for permission in permissions
     ])
+
+@app.route('/delete-permission', methods=['DELETE'])
+def delete_permission():
+    data = request.get_json()
+    permission_id = data.get("id")
+    permission = Permission.query.get(permission_id)
+
+    if not permission_id:
+        return jsonify({"error": "No Permission ID provided"}), 400
+
+
+    if not permission:
+        return jsonify({"error": "Permission not found"}), 404
+
+    db.session.delete(permission)
+    db.session.commit()
+
+    return jsonify({"message": f"Permission {permission_id} deleted successfully","id": permission_id})
 
 @app.route('/logout', methods=['POST'])
 def logout():

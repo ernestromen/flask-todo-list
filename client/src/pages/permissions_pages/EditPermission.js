@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setSuccess,getAllPermissions,getPermission,updatePermission } from "../../features/permissions/permissionSlice";
+import {
+  setSuccess,
+  getAllPermissions,
+  getPermission,
+  updatePermission,
+} from "../../features/permissions/permissionSlice";
 import { useParams } from "react-router-dom";
 import ErrorMessage from "../../pages/ErrorMessage";
 import SuccessMessage from "../../pages/SuccessMessage";
@@ -12,16 +17,20 @@ function EditPermission() {
   const { id } = useParams();
   const dispatch = useDispatch();
 
-  const { role, error, success, loading } = useSelector((state) => state.role);
-  const { permission,permissions } = useSelector((state) => state.permission);
+  const { loading } = useSelector((state) => state.role);
+  const { permission, success, error } = useSelector(
+    (state) => state.permission
+  );
 
   useEffect(() => {
     dispatch(getPermission(id));
   }, []);
 
   useEffect(() => {
-    setPermissionName(permission.name);
-    setDescription(permission.description);
+    if (permission && permission.name !== undefined) {
+      setPermissionName(permission.name);
+      setDescription(permission.description);
+    }
   }, [permission]);
 
   useEffect(() => {
@@ -35,6 +44,7 @@ function EditPermission() {
       name: permissionName,
       description: description,
     };
+    dispatch(setSuccess(null));
     dispatch(updatePermission(formData));
   };
 
@@ -81,7 +91,7 @@ function EditPermission() {
           </label>
           <input
             value={description}
-            type="description"
+            type="text"
             className="form-control"
             id="description"
             placeholder="Enter your description"

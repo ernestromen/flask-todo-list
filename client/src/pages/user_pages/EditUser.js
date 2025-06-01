@@ -4,7 +4,6 @@ import {
   getUser,
   updateUser,
   setSuccess,
-  setError,
 } from "../../features/users/userSlice";
 import { useParams } from "react-router-dom";
 import ErrorMessage from "../../pages/ErrorMessage";

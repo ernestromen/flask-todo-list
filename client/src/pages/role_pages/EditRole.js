@@ -4,7 +4,6 @@ import {
   getRole,
   updateRole,
   setSuccess,
-  setError,
 } from "../../features/roles/roleSlice";
 import { getAllPermissions } from "../../features/permissions/permissionSlice";
 import { useParams } from "react-router-dom";
@@ -15,7 +14,6 @@ import Select from "react-select";
 function EditRole() {
   const [roleName, setRoleName] = useState("");
   const [description, setDescription] = useState("");
-  const [permissionName, setPermission] = useState("");
   const [permissionsList, setPermissionsList] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
 
@@ -50,8 +48,8 @@ function EditRole() {
         currentUser.permissions.includes(opt.value)
       );
 
-      setPermissionsList(allOptions); // full list
-      setSelectedPermissions(userSelected); // only selected ones
+      setPermissionsList(allOptions);
+      setSelectedPermissions(userSelected);
     }
   }, [currentUser, permissions]);
 

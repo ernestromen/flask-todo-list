@@ -16,6 +16,9 @@ export default {
     return axios.get(`http://localhost:5000/edit-permission/${id}`);
   },
   deletePermission(id) {
-    return axios.post("http://localhost:5000/delete-permission", { id });
+    return axios.delete("http://localhost:5000/delete-permission", {
+      headers: { "Content-Type": "application/json" },
+      data: { id },
+    });
   },
 };

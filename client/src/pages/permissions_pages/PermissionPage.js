@@ -4,28 +4,25 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import {
   fetchAllUsers,
-  deleteUser,
-  setSuccess,
-  setError,
+  deleteUser
 } from "../../features/users/userSlice";
 import ErrorMessage from "../../pages/ErrorMessage";
 import SuccessMessage from "../../pages/SuccessMessage";
 import DeleteButton from "../../pages/DeleteButton.js";
-import { getAllPermissions } from "../../features/permissions/permissionSlice";
+import { getAllPermissions,deletePermission } from "../../features/permissions/permissionSlice";
 
 function PermissionPage({ plusIcon }) {
   const {
     error: userError,
     success: userSuccess,
-    users,
     loading,
   } = useSelector((state) => state.user);
-  const { error: authError, currentUser } = useSelector((state) => state.auth);
+  const { error: authError } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const { permissions } = useSelector((state) => state.permission);
+  const { permissions,success,error } = useSelector((state) => state.permission);
 
   const handleDeletion = (id) => {
-    dispatch(deleteUser(id));
+    dispatch(deletePermission(id));
   };
 
   useEffect(() => {
@@ -49,8 +46,8 @@ function PermissionPage({ plusIcon }) {
   return (
     <div className="content mt-5">
       <h2 className="text-center mt-5">Permissions</h2>
-      <SuccessMessage message={userSuccess} />
-      <ErrorMessage message={userError} />
+      <SuccessMessage message={success} />
+      <ErrorMessage message={error} />
       <ErrorMessage message={authError} />
       <div className="text-center my-3 mt-5">
         <Link to="/add-permission">
@@ -77,7 +74,7 @@ function PermissionPage({ plusIcon }) {
                 </Link>
               </td>
               <td>
-                <button className="btn btn-danger">Delete </button>{" "}
+                <button className="btn btn-danger" onClick={() => handleDeletion(permission.id)}>Delete </button>
               </td>
             </tr>
           ))}

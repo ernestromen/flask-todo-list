@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser, setSuccess, setError } from "../../features/users/userSlice";
+import { addUser } from "../../features/users/userSlice";
 import ErrorMessage from "../../pages/ErrorMessage";
 import SuccessMessage from "../../pages/SuccessMessage";
 

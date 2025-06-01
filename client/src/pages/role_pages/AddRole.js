@@ -3,12 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import ErrorMessage from "../../pages/ErrorMessage";
 import SuccessMessage from "../../pages/SuccessMessage";
 import Select from "react-select";
-import {
-  getRole,
-  updateRole,
-  setSuccess,
-  setError,
-} from "../../features/roles/roleSlice";
 import { getAllPermissions } from "../../features/permissions/permissionSlice";
 
 function AddRole() {
@@ -19,7 +13,6 @@ function AddRole() {
   const [permissionsList, setPermissionsList] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
 
-  const { currentUser } = useSelector((state) => state.auth);
   const { permissions } = useSelector((state) => state.permission);
 
   const { error, success, loading } = useSelector((state) => state.user);
@@ -52,7 +45,7 @@ function AddRole() {
         value: p.name,
       }));
 
-      setPermissionsList(allOptions); // full list
+      setPermissionsList(allOptions);
     }
   }, [permissions]);
 
@@ -68,7 +61,6 @@ function AddRole() {
 
   return (
     <div className="content mt-5">
-      {console.log("Permissions:", permissions)}
       <h2 className="text-center mt-5">Add Role</h2>
       <SuccessMessage message={success} />
       <ErrorMessage message={error} />

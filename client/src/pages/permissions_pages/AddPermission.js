@@ -1,31 +1,29 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser, setSuccess, setError } from "../../features/users/userSlice";
+import { addPermission } from "../../features/permissions/permissionSlice";
 import ErrorMessage from "../../pages/ErrorMessage";
 import SuccessMessage from "../../pages/SuccessMessage";
 
 function AddPermission() {
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const { error, success, loading } = useSelector((state) => state.user);
+  const [permissionName, setPermissionName] = useState("");
+  const [description, setDescription] = useState("");
+  const { loading } = useSelector((state) => state.user);
 
   const { error: authError } = useSelector((state) => state.auth);
+  const { error, success } = useSelector((state) => state.permission);
 
   const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     let formData = {
-      username: userName,
-      email: email,
-      password: password,
+      name: permissionName,
+      description: description,
     };
 
-    dispatch(addUser(formData));
-    setUserName("");
-    setEmail("");
-    setPassword("");
+    dispatch(addPermission(formData));
+    setPermissionName("");
+    setDescription("");
   };
 
   if (loading)
@@ -51,15 +49,15 @@ function AddPermission() {
       >
         <div className="mb-3">
           <label htmlFor="username" className="form-label">
-            Username
+            Permission name
           </label>
           <input
-            value={userName}
+            value={permissionName}
             type="text"
             className="form-control"
             id="name"
-            placeholder="Enter Role name"
-            onChange={(e) => setUserName(e.target.value)}
+            placeholder="Enter Permission name"
+            onChange={(e) => setPermissionName(e.target.value)}
           />
         </div>
 
@@ -68,16 +66,16 @@ function AddPermission() {
             Description
           </label>
           <textarea
-            value={email}
+            value={description}
             className="form-control"
             id="email"
             placeholder="Enter Description"
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </div>
 
         <button type="submit" className="btn btn-primary w-100">
-          Add Role
+          Add Permission
         </button>
       </form>
     </div>

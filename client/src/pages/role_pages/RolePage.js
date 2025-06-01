@@ -2,12 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-import {
-  fetchAllUsers,
-  deleteUser,
-  setSuccess,
-  setError,
-} from "../../features/users/userSlice";
+import { deleteUser } from "../../features/users/userSlice";
 import { fetchAllRoles } from "../../features/roles/roleSlice";
 import ErrorMessage from "../../pages/ErrorMessage";
 import SuccessMessage from "../../pages/SuccessMessage";

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import PermissionAPI from "../../api/permission";
 
-export const addRole = createAsyncThunk(
+export const addPermission = createAsyncThunk(
   "permission/addPermission",
   async (formData, { rejectWithValue }) => {
     try {
@@ -90,7 +90,7 @@ const initialState = {
   success: null,
 };
 
-const roleSlice = createSlice({
+const permissionSlice = createSlice({
   name: "permissions",
   initialState,
   reducers: {
@@ -109,14 +109,14 @@ const roleSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(addRole.pending, (state) => {
+      .addCase(addPermission.pending, (state) => {
         state.loading = true;
       })
-      .addCase(addRole.fulfilled, (state, action) => {
+      .addCase(addPermission.fulfilled, (state, action) => {
         state.loading = false;
         state.success = action.payload.message;
       })
-      .addCase(addRole.rejected, (state, action) => {
+      .addCase(addPermission.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -147,7 +147,7 @@ const roleSlice = createSlice({
         state.loading = true;
       })
       .addCase(getPermission.fulfilled, (state, action) => {
-        state.role = action.payload;
+        state.permission = action.payload;
         state.loading = false;
         state.success = action.payload.message;
       })
@@ -160,7 +160,7 @@ const roleSlice = createSlice({
       })
       .addCase(deletePermission.fulfilled, (state, action) => {
         const deletedId = action.payload.id;
-        state.users = state.users.filter((user) => user.id !== deletedId);
+        state.permissions = state.permissions.filter((permission) => permission.id !== deletedId);
         state.success = action.payload.message;
         state.loading = false;
       })
@@ -174,5 +174,5 @@ const roleSlice = createSlice({
 });
 
 export const { users, setUsers, setPermission, setSuccess, setError } =
-  roleSlice.actions;
-export default roleSlice.reducer;
+  permissionSlice.actions;
+export default permissionSlice.reducer;
